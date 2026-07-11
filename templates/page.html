@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} · {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
+
+{% block content %}
+<div class="doc-layout">
+  <article class="doc-article">
+    <header class="page-header">
+      <p class="eyebrow">{{ page.components | first | default(value="Article") }}</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}
+        <p class="lead">{{ page.description }}</p>
+      {% endif %}
+    </header>
+    <div class="prose">
+      {{ page.content | safe }}
+    </div>
+
+    {% if config.extra.giscus.enabled | default(value=false) %}
+      <section class="discussion-block" aria-labelledby="discussion-title">
+        <div class="discussion-heading">
+          <p class="eyebrow">Discussion</p>
+          <h2 id="discussion-title">评论与讨论</h2>
+          <p>使用 GitHub 登录后，可以在这里留言、提问或补充文章内容。</p>
+          <div class="discussion-actions">
+            <a href="https://github.com/linkyourbin/ref42/issues/new" target="_blank" rel="noopener noreferrer">提交 Issue</a>
+            <a href="https://github.com/linkyourbin/ref42/discussions" target="_blank" rel="noopener noreferrer">查看 Discussions</a>
+          </div>
+        </div>
+        <script src="https://giscus.app/client.js"
+          data-repo="{{ config.extra.giscus.repo }}"
+          data-repo-id="{{ config.extra.giscus.repo_id }}"
+          data-category="{{ config.extra.giscus.category }}"
+          data-category-id="{{ config.extra.giscus.category_id }}"
+          data-mapping="{{ config.extra.giscus.mapping }}"
+          data-strict="{{ config.extra.giscus.strict }}"
+          data-reactions-enabled="{{ config.extra.giscus.reactions_enabled }}"
+          data-emit-metadata="{{ config.extra.giscus.emit_metadata }}"
+          data-input-position="{{ config.extra.giscus.input_position }}"
+          data-theme="{{ config.extra.giscus.theme_light }}"
+          data-lang="{{ config.extra.giscus.lang }}"
+          crossorigin="anonymous"
+          async>
+        </script>
+        <noscript>
+          <p class="discussion-fallback">启用 JavaScript 后即可加载 GitHub Discussions 评论区。</p>
+        </noscript>
+      </section>
+    {% endif %}
+  </article>
+
+  {% if page.toc %}
+    <aside class="toc" aria-label="Table of contents">
+      <strong>On this page</strong>
+      {% for h in page.toc %}
+        <a href="{{ h.permalink | replace(from=page.permalink, to='') | safe }}">{{ h.title }}</a>
+        {% for child in h.children %}
+          <a class="toc-child" href="{{ child.permalink | replace(from=page.permalink, to='') | safe }}">{{ child.title }}</a>
+        {% endfor %}
+      {% endfor %}
+    </aside>
+  {% endif %}
+</div>
+{% endblock content %}

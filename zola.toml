@@ -1,0 +1,38 @@
+base_url = "https://www.ref42.com/"
+title = "ref42"
+description = "Be the change you want to see in the world."
+compile_sass = true
+build_search_index = true
+generate_feeds = true
+minify_html = true
+
+[slugify]
+paths = "safe"
+
+[markdown]
+render_emoji = false
+external_links_target_blank = true
+external_links_no_follow = true
+external_links_no_referrer = true
+
+[markdown.highlighting]
+theme = "catppuccin-mocha"
+
+[extra]
+github = "https://github.com/linkyourbin"
+bilibili = "https://space.bilibili.com/3493142393260061"
+
+[extra.giscus]
+enabled = true
+repo = "linkyourbin/ref42"
+repo_id = "R_kgDOS0bBzQ"
+category = "General"
+category_id = "DIC_kwDOS0bBzc4C-zX_"
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "top"
+theme_light = "light"
+theme_dark = "dark_dimmed"
+lang = "zh-CN"

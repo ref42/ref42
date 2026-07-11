@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}panic: route not found - {{ config.title }}{% endblock title %}
+{% block description %}Ref42 404 page.{% endblock description %}
+
+{% block content %}
+<section class="panic-404" aria-labelledby="panic-title">
+  <div class="panic-copy">
+    <p class="eyebrow">404 / panic</p>
+    <h1 id="panic-title">thread 'main' panicked</h1>
+    <p class="lead">The route you asked for was not found in this build.</p>
+    <div class="panic-actions">
+      <a class="panic-button panic-button-primary" href="/">Back to root</a>
+      <a class="panic-button" href="/toolchain/">Open notes</a>
+    </div>
+  </div>
+
+  <pre class="panic-window" aria-label="Rust panic backtrace"><code>$ RUST_BACKTRACE=1 ref42 open /missing
+thread 'main' panicked at 'route not found',
+src/router.rs:404:9
+
+stack backtrace:
+   0: ref42::router::resolve
+   1: ref42::notes::open
+   2: core::ops::function::FnOnce::call_once
+
+help: run `cargo run -- /` to return home</code></pre>
+</section>
+{% endblock content %}

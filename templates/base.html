@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+    <link rel="icon" href="/logo/ref42.png">
+    <link rel="stylesheet" href="/main.css">
+    <script>
+      (function () {
+        var saved = localStorage.getItem("ref42-theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = saved || (prefersDark ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Ref42 home">
+        <img src="/logo/ref42.png" alt="">
+        <span>Ref42</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/toolchain/">Toolchain</a>
+        <a href="/esp32/">ESP32</a>
+        <a href="/stm32/">STM32</a>
+        <a href="/utils/">Tools</a>
+        <form class="site-search" role="search" autocomplete="off">
+          <label class="visually-hidden" for="site-search-input">Search notes</label>
+          <input id="site-search-input" type="search" placeholder="Search notes" aria-controls="site-search-results" aria-expanded="false">
+          <div id="site-search-results" class="search-results" role="listbox" hidden></div>
+        </form>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span class="theme-toggle__sun" aria-hidden="true">☀</span>
+          <span class="theme-toggle__moon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      {% block content %}{% endblock content %}
+    </main>
+
+    <footer class="site-footer">
+      <span>Rust embedded notes for real chips.</span>
+      <div>
+        <a href="https://github.com/linkyourbin">GitHub</a>
+        <a href="https://space.bilibili.com/3493142393260061">Bilibili</a>
+      </div>
+    </footer>
+    <script>
+      (function () {
+        var button = document.querySelector(".theme-toggle");
+        if (!button) return;
+
+        function apply(theme) {
+          document.documentElement.dataset.theme = theme;
+          localStorage.setItem("ref42-theme", theme);
+          button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+
+          var frame = document.querySelector("iframe.giscus-frame");
+          if (frame) {
+            frame.contentWindow.postMessage({
+              giscus: {
+                setConfig: {
+                  theme: theme === "dark" ? "{{ config.extra.giscus.theme_dark | default(value='dark_dimmed') }}" : "{{ config.extra.giscus.theme_light | default(value='light') }}"
+                }
+              }
+            }, "https://giscus.app");
+          }
+        }
+
+        button.addEventListener("click", function () {
+          var current = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+          apply(current === "dark" ? "light" : "dark");
+        });
+
+        apply(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+      })();
+    </script>
+    <script>
+      (function () {
+        var blocks = document.querySelectorAll(".prose pre");
+        if (!blocks.length) return;
+
+        var copyIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 7.5V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 7.5h8a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var checkIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        function copyText(text, button) {
+          function done() {
+            button.innerHTML = checkIcon;
+            button.classList.add("is-copied");
+            button.setAttribute("aria-label", "Copied");
+            button.setAttribute("title", "Copied");
+            window.setTimeout(function () {
+              button.innerHTML = copyIcon;
+              button.classList.remove("is-copied");
+              button.setAttribute("aria-label", "Copy to clipboard");
+              button.setAttribute("title", "Copy to clipboard");
+            }, 1600);
+          }
+
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done).catch(function () {
+              fallbackCopy(text, done);
+            });
+            return;
+          }
+
+          fallbackCopy(text, done);
+        }
+
+        function fallbackCopy(text, done) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.top = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand("copy");
+            done();
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        }
+
+        blocks.forEach(function (block) {
+          var code = block.querySelector("code");
+          if (!code) return;
+
+          var wrapper = document.createElement("div");
+          wrapper.className = "code-block";
+          block.parentNode.insertBefore(wrapper, block);
+          wrapper.appendChild(block);
+
+          var button = document.createElement("button");
+          button.className = "code-copy";
+          button.type = "button";
+          button.innerHTML = copyIcon;
+          button.setAttribute("aria-label", "Copy to clipboard");
+          button.setAttribute("title", "Copy to clipboard");
+          button.addEventListener("click", function () {
+            copyText(code.innerText.replace(/\n$/, ""), button);
+          });
+
+          wrapper.appendChild(button);
+        });
+      })();
+    </script>
+    <script defer src="/search_index.en.js"></script>
+    <script defer src="/search.js"></script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} · {{ config.title }}{% endblock title %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
+
+{% block content %}
+<section class="section-page">
+  <header class="page-header">
+    <p class="eyebrow">Section</p>
+    <h1>{{ section.title }}</h1>
+    {% if section.description %}
+      <p class="lead">{{ section.description }}</p>
+    {% endif %}
+  </header>
+
+  {% if section.content %}
+    <article class="prose section-copy">
+      {{ section.content | safe }}
+    </article>
+  {% endif %}
+
+  {% if section.pages %}
+    <div class="article-list section-list">
+      {% for page in section.pages %}
+        <a href="{{ page.path | safe }}">
+          <span>{{ section.title }}</span>
+          {{ page.title }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock content %}
