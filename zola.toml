@@ -19,12 +19,12 @@ external_links_no_referrer = true
 theme = "catppuccin-mocha"
 
 [extra]
-github = "https://github.com/linkyourbin"
+github = "https://github.com/ref42"
 bilibili = "https://space.bilibili.com/3493142393260061"
 
 [extra.giscus]
 enabled = true
-repo = "linkyourbin/ref42"
+repo = "ref42/ref42"
 repo_id = "R_kgDOS0bBzQ"
 category = "General"
 category_id = "DIC_kwDOS0bBzc4C-zX_"

@@ -8,7 +8,7 @@ weight: 30
 
 `ARMUP`是一个面向`Windows`的`Cortex-M`嵌入式工具链安装器，用`Rust`编写。它会把常用工具下载并安装到同一个根目录下，也可以顺手把这些工具加入当前用户的`Path`。
 
-> 仓库地址：https://github.com/linkyourbin/armup
+> 仓库地址：https://github.com/ref42/armup
 
 如果你只是想在`Windows`上快速准备一套可用的`Cortex-M`开发环境，而不想手动下载、解压、配置一堆工具，那么`ARMUP`就是为这个场景准备的。
 
