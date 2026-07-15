@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3000 3000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #e3a596;
+        font-size: 872.36px;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: FiraCode-Bold, 'Fira Code';
+        font-weight: 700;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        font-size: 462.88px;
+      }
+
+      .cls-4 {
+        fill: #055c8a;
+      }
+
+      .cls-5 {
+        fill: none;
+        stroke: #df585f;
+        stroke-miterlimit: 10;
+        stroke-width: 150px;
+      }
+
+      .cls-6 {
+        fill: #0372b1;
+      }
+
+      .cls-7 {
+        fill: #2f83a8;
+      }
+
+      .cls-8 {
+        fill: #015c8b;
+      }
+
+      .cls-9 {
+        fill: #df585f;
+      }
+    </style>
+  </defs>
+  <rect class="cls-3" x="0" width="3000" height="3000"/>
+  <text class="cls-2" transform="translate(35.63 2390.32)"><tspan class="cls-8" x="0" y="0">Se</tspan><tspan class="cls-6" x="569.69" y="0">ek</tspan></text>
+  <text class="cls-1" transform="translate(373.35 1345.12)"><tspan x="0" y="0">S</tspan></text>
+  <text class="cls-2" transform="translate(1247.89 2390.33)"><tspan class="cls-4" x="0" y="0">Ex</tspan><tspan class="cls-6" x="569.69" y="0">port</tspan></text>
+  <rect class="cls-7" x="1739.54" y="1759.33" width="832.06" height="181.35"/>
+  <rect class="cls-7" x="1854.88" y="530.27" width="601.36" height="362.69" transform="translate(1443.95 2867.19) rotate(-90)"/>
+  <polygon class="cls-7" points="2155.57 1651.11 2699.6 1012.3 1611.53 1012.3 2155.57 1651.11"/>
+  <circle class="cls-5" cx="641.76" cy="1036.32" r="551.03"/>
+  <rect class="cls-9" x="879.58" y="1584.74" width="725.38" height="180" rx="12" ry="12" transform="translate(1548.07 -387.89) rotate(45)"/>
+</svg>
