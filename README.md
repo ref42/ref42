@@ -1,1 +1,0 @@
-Hope my notes could be helpful to you.
