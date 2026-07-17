@@ -6,7 +6,7 @@
 {% block content %}
 <section class="section-page">
   <header class="page-header">
-    <p class="eyebrow">Section</p>
+    <p class="eyebrow">Shelf</p>
     <h1>{{ section.title }}</h1>
     {% if section.description %}
       <p class="lead">{{ section.description }}</p>
@@ -24,7 +24,7 @@
       {% for page in section.pages %}
         <a href="{{ page.path | safe }}">
           <span>{{ section.title }}</span>
-          {{ page.title }}
+          <strong>{{ page.title }}</strong>
         </a>
       {% endfor %}
     </div>

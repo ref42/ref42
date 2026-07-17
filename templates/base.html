@@ -6,7 +6,8 @@
     <meta name="color-scheme" content="light dark">
     <title>{% block title %}{{ config.title }}{% endblock title %}</title>
     <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
-    <link rel="icon" href="/logo/ref42.png">
+    <link id="site-favicon" rel="icon" type="image/png" href="/logo/ref42-favicon.png">
+    <link rel="stylesheet" href="/styles/tokens.css">
     <link rel="stylesheet" href="/main.css">
     <script>
       (function () {
@@ -20,13 +21,23 @@
   <body>
     <header class="site-header">
       <a class="brand" href="/" aria-label="Ref42 home">
-         <img src="/logo/ref42.png" alt="" style="transform: scale(2);">
+        <img class="brand__mark" src="/logo/ref42.png" alt="">
+        <span class="brand__text">
+          <span class="brand__name">ref42</span>
+          <span class="brand__tag">my daily notes</span>
+        </span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/toolchain/">Toolchain</a>
         <a href="/esp32/">ESP32</a>
         <a href="/stm32/">STM32</a>
         <a href="/utils/">Tools</a>
+        <a class="social-link" href="https://github.com/ref42" aria-label="GitHub" title="GitHub">
+          <img src="/icons/github.svg" alt="">
+        </a>
+        <a class="social-link" href="https://space.bilibili.com/3493142393260061" aria-label="Bilibili" title="Bilibili">
+          <img src="/icons/bilibili.svg" alt="">
+        </a>
         <form class="site-search" role="search" autocomplete="off">
           <label class="visually-hidden" for="site-search-input">Search notes</label>
           <input id="site-search-input" type="search" placeholder="Search notes" aria-controls="site-search-results" aria-expanded="false">
@@ -42,14 +53,12 @@
     <main>
       {% block content %}{% endblock content %}
     </main>
-
-    <footer class="site-footer">
-      <span>Rust embedded notes for real chips.</span>
-      <div>
-        <a href="https://github.com/ref42">GitHub</a>
-        <a href="https://space.bilibili.com/3493142393260061">Bilibili</a>
-      </div>
-    </footer>
+    <button class="back-to-top" type="button" aria-label="Back to top" title="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 19V5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m6 11 6-6 6 6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
     <script>
       (function () {
         var button = document.querySelector(".theme-toggle");
@@ -78,6 +87,67 @@
         });
 
         apply(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+      })();
+    </script>
+    <script>
+      (function () {
+        var key = "ref42-read-notes";
+        var selector = ".blog-post";
+
+        function readSet() {
+          try {
+            return new Set(JSON.parse(localStorage.getItem(key) || "[]"));
+          } catch (_) {
+            return new Set();
+          }
+        }
+
+        function saveSet(set) {
+          localStorage.setItem(key, JSON.stringify(Array.from(set)));
+        }
+
+        function applyReadState() {
+          var read = readSet();
+          document.querySelectorAll(selector).forEach(function (link) {
+            if (read.has(link.pathname)) {
+              link.classList.add("is-read");
+            }
+            link.addEventListener("click", function () {
+              var next = readSet();
+              next.add(link.pathname);
+              saveSet(next);
+              link.classList.add("is-read");
+            });
+          });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", applyReadState);
+        } else {
+          applyReadState();
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        var button = document.querySelector(".back-to-top");
+        if (!button) return;
+
+        var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function sync() {
+          button.classList.toggle("is-visible", window.scrollY > 480);
+        }
+
+        button.addEventListener("click", function () {
+          window.scrollTo({
+            top: 0,
+            behavior: reduceMotion ? "auto" : "smooth"
+          });
+        });
+
+        window.addEventListener("scroll", sync, { passive: true });
+        sync();
       })();
     </script>
     <script>

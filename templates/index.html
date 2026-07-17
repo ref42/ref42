@@ -4,26 +4,16 @@
 {% block description %}开发笔记：工具链、芯片平台、实验项目和自制工具。{% endblock description %}
 
 {% block content %}
-<section class="home-hero">
-  <div>
-    <p class="eyebrow">Embedded Rust notes</p>
-    <h1>Ref42</h1>
-    <p class="lead">开发笔记，包括但不仅限于嵌入式。</p>
-  </div>
-</section>
-
-<section class="content-band">
-  <div class="section-heading">
-    <p>Articles</p>
-    <h2>当前文章</h2>
-  </div>
-  <div class="article-list">
+<div class="blog-home">
+  <section class="blog-section" aria-labelledby="latest-notes-title">
+    <h2 id="latest-notes-title">Latest notes</h2>
+    <div class="blog-list">
     {% set section_paths = ["toolchain/_index.md", "esp32/_index.md", "stm32/_index.md", "utils/_index.md"] %}
     {% for section_path in section_paths %}
       {% set section = get_section(path=section_path) %}
       {% for page in section.pages %}
         {% set component = page.components | first | default(value=section.title) %}
-        <a href="{{ page.path | safe }}">
+        <a class="blog-post" href="{{ page.path | safe }}">
           {% if component == "esp32" %}
             <span>ESP32</span>
           {% elif component == "stm32" %}
@@ -35,27 +25,11 @@
           {% else %}
             <span>{{ section.title }}</span>
           {% endif %}
-          {{ page.title }}
+          <strong>{{ page.title }}</strong>
         </a>
       {% endfor %}
     {% endfor %}
-  </div>
-</section>
-
-<section class="content-band">
-  <div class="section-heading">
-    <p>Chips</p>
-    <h2>按芯片系列进入</h2>
-  </div>
-  <div class="chip-grid">
-    <a href="/esp32/">
-      <strong>ESP32</strong>
-      <span>ESP32-C3/C6/S3，Wi-Fi、蓝牙和 esp-hal 实验。</span>
-    </a>
-    <a href="/stm32/">
-      <strong>STM32</strong>
-      <span>STM32F4/H7，Embassy、probe-rs 和寄存器级实验。</span>
-    </a>
-  </div>
-</section>
+    </div>
+  </section>
+</div>
 {% endblock content %}

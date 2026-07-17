@@ -7,7 +7,7 @@
 <div class="doc-layout">
   <article class="doc-article">
     <header class="page-header">
-      <p class="eyebrow">{{ page.components | first | default(value="Article") }}</p>
+      <p class="eyebrow">{{ page.components | first | default(value="Note") }}</p>
       <h1>{{ page.title }}</h1>
       {% if page.description %}
         <p class="lead">{{ page.description }}</p>
