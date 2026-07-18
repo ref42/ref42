@@ -5,7 +5,7 @@ weight: 20
 ---
 
 <p align="center">
-  <img src="/utils/seex.svg" alt="SeEx logo" width="220">
+  <img src="/utils/seex.png" alt="SeEx logo" width="220">
 </p>
 
 ## 简介
