@@ -1,6 +1,6 @@
 ---
-title: 'SeEx：npnp 的桌面图形界面'
-description: 'SeEx 是 npnp 的开源桌面 GUI，可以监听剪贴板里的 LCSC 元件 ID，维护 BOM 列表，并导出 Altium 或 KiCad 元件库。'
+title: 'SeEx：EDA 元件库导出的桌面工具'
+description: 'SeEx 是一个用 Rust 和 egui/eframe 构建的桌面工具，用于批量导出 LCSC 元件到 KiCad 和 Altium Designer。'
 weight: 20
 ---
 
@@ -8,49 +8,37 @@ weight: 20
   <img src="/utils/seex.png" alt="SeEx logo" width="220">
 </p>
 
-## 简介
+`SeEx`（Seek and Export）把元件搜索、清单整理和 EDA 库导出集中到一个桌面工作流里。它支持 KiCad 与 Altium Designer，并且可以批量处理多个元件。
 
-`SeEx` 是 `Seek & Export` 的缩写，它是 [`npnp`](/utils/npnp/) 的桌面图形界面。它会监听剪贴板内容，按关键字或正则提取 LCSC 元件 ID，然后把这些 ID 交给 `npnp` 导出 EDA 库。
+> [项目仓库](https://github.com/ref42/seex) · [下载 Releases](https://github.com/ref42/seex/releases)
 
-> 仓库地址：https://github.com/ref42/seex
+## 主要能力
 
-项目已经重新开源。欢迎通过 `Issue` 反馈问题、提供复现样例或提出需求；目前不合并外部 `Pull Request`。
+- 导出 KiCad 的 Symbol、Footprint 和 3D 模型。
+- 导出 Altium Designer 的 `SchLib` 和 `PcbLib`。
+- 支持单个导出、批量导出，以及合并到同一个库。
+- 支持中英文元数据、多线程下载和独立导出 3D 模型。
+- 支持自定义原理图描边与填充颜色。
+- 当前已知支持 KiCad 9.0+ 与 Altium Designer 23.x+。
 
-## 适合什么场景
+## 使用方式
 
-如果你在 LCSC 或类似页面上选型，经常复制一串元件信息，那么 `SeEx` 可以把这个动作变成一个可追踪的清单：
+打开 SeEx 后，可以在 Monitor 页面确认元件输入，再到 Export 页面选择目标 EDA、元数据语言、导出范围和批量选项。适合不想频繁记忆命令，又需要重复导出元件库的场景。
 
-- 监听剪贴板并识别 `Cxxxx` 元件 ID。
-- 同一段文本里出现多个 ID 时，尽量全部提取。
-- 维护当前匹配列表和历史记录。
-- 导出 BOM CSV，方便后续整理。
-- 调用 `npnp` 导出 Altium 或 KiCad 库。
-- 导出失败时保留详细信息，方便复制失败 ID 排查。
+SeEx 当前已经直接包含导出能力，不再依赖单独安装的 `npnp` CLI。需要脚本、CI 或纯命令行工作流时，可以使用同系列的 [`npnp`](/utils/npnp/)。
 
-## 和 npnp 的关系
+## 界面预览
 
-`npnp` 是底层导出引擎，适合命令行和脚本；`SeEx` 是桌面 GUI，适合选型、复制、整理、批量导出的交互流程。
+<div class="image-pair">
+  <img src="/utils/seex/1.png" alt="SeEx interface preview 1">
+  <img src="/utils/seex/2.png" alt="SeEx interface preview 2">
+</div>
 
-| 工具 | 角色 |
-| --- | --- |
-| `npnp` | 负责搜索、下载、转换和导出 EDA 库 |
-| `SeEx` | 负责监听剪贴板、管理待导出 ID、提供图形化导出入口 |
-
-## 下载和使用
-
-可以从 GitHub Releases 下载对应平台的安装包：
-
-> https://github.com/ref42/seex/releases
-
-打开 `SeEx` 后，一边在网页上复制元件信息，一边在 Monitor 页面确认识别结果。整理好 ID 后，可以在 Export 页面选择：
-
-- EDA 目标：`Altium` 或 `KiCad`
-- 元数据语言：中文或英文
-- 导出范围：完整库、符号库、封装库等
-- 批量选项：合并、追加、失败继续、强制覆盖等
+<div class="image-pair">
+  <img src="/utils/seex/3.png" alt="SeEx interface preview 3">
+  <img src="/utils/seex/4.png" alt="SeEx interface preview 4">
+</div>
 
 ## 技术栈
 
-`SeEx` 使用 `Tauri` 构建桌面应用，前端使用 `TypeScript`，底层导出能力来自 `Rust` 版本的 `npnp`。
-
-这类工具的目标不是做一个复杂的管理系统，而是把“复制元件 ID → 保存清单 → 导出库”这个高频流程做得足够顺手。
+SeEx 使用 Rust、egui 和 eframe 构建，目标是让“找到元件、整理清单、导出库”这条路径更直接。
