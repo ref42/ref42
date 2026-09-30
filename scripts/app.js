@@ -598,35 +598,6 @@
 
     /* ---- near-miss suggestions ----------------------------------------- */
 
-    /* Two rows and no allocation, which is plenty for the tokens on this site:
-       the strings being compared are one word long, and the length guard below
-       keeps the inner loop short. */
-    function levenshtein(a, b) {
-      if (a === b) return 0;
-      if (!a.length) return b.length;
-      if (!b.length) return a.length;
-
-      var previous = [];
-      var i;
-      var j;
-      for (j = 0; j <= b.length; j++) previous[j] = j;
-
-      for (i = 1; i <= a.length; i++) {
-        var current = [i];
-        for (j = 1; j <= b.length; j++) {
-          var cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
-          current[j] = Math.min(
-            previous[j] + 1,
-            current[j - 1] + 1,
-            previous[j - 1] + cost
-          );
-        }
-        previous = current;
-      }
-
-      return previous[b.length];
-    }
-
     /* The suggestion is used as the look of a word, so punctuation and case are
        noise: `ESP32-C3` and `esp32` have to come out as the same token, and the
        space in `Cortex-M + Rust` has to end a token rather than join two. */
@@ -1241,6 +1212,104 @@
     console.log("/ search · ? shortcuts · j/k next/previous note");
   }
 
+  /* Lowercase, alphanumerics only, so `rust_dev_base_env`, `rust-dev-base-env`
+     and `Rust Dev Base Env` all compare equal. The mirror of `normalize` in
+     `src/site.rs`, which is what makes the two agree on a match. */
+  function slugify(value) {
+    return (value || "").toString().toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+
+  /* Two rows and no allocation, which is plenty for the tokens on this site:
+     the strings being compared are one word long, and the callers guard on
+     length before paying for it.
+
+     At this scope rather than inside `initSearch`, because both the search's
+     near-miss suggestions and the 404's "did you mean" need it. It used to be
+     nested, and calling it from outside threw a `ReferenceError` that the index
+     loader's silent `.catch` swallowed — the suggestion simply never appeared,
+     with nothing in the console to say why. */
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+
+    var previous = [];
+    var i;
+    var j;
+    for (j = 0; j <= b.length; j++) previous[j] = j;
+
+    for (i = 1; i <= a.length; i++) {
+      var current = [i];
+      for (j = 1; j <= b.length; j++) {
+        var cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+        current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost);
+      }
+      previous = current;
+    }
+
+    return previous[b.length];
+  }
+
+  /* ---- 404 ------------------------------------------------------------- */
+
+  /* Static hosting serves one document for every missing URL, so the 404 cannot
+     name the path the reader actually asked for, and the "did you mean" line has
+     nothing to work from. The Rust server fills both in when it renders the page;
+     this makes the published copy agree with it, using the same rules and the
+     same bar for a match: an exact slug anywhere on the site, a prefix either
+     way, or at most two edits. Below three characters nothing is offered —
+     almost everything is within two edits of everything else at that length. */
+  function initNotFound() {
+    var path = document.getElementById("panic-path");
+    if (!path) return;
+
+    path.textContent = location.pathname;
+
+    var slot = document.getElementById("panic-meant");
+    var link = document.getElementById("panic-meant-link");
+    if (!slot || !link) return;
+
+    var segments = location.pathname.replace(/^\/+|\/+$/g, "").split("/");
+    var needle = slugify(segments[segments.length - 1] || "");
+    if (needle.length < 3) return;
+
+    function offer() {
+      if (!Array.isArray(indexDocs)) return;
+
+      var best = null;
+      var bestScore = 0;
+
+      indexDocs.forEach(function (doc) {
+        var parts = String(doc[0]).replace(/^\/+|\/+$/g, "").split("/");
+        var slug = slugify(parts[parts.length - 1] || "");
+        var score = 0;
+
+        if (slug === needle) score = 100;
+        else if (slug.length >= 3 && (slug.indexOf(needle) === 0 || needle.indexOf(slug) === 0)) {
+          score = 70;
+        } else {
+          var distance = levenshtein(slug, needle);
+          score = distance === 1 ? 45 : distance === 2 ? 40 : 0;
+        }
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = doc;
+        }
+      });
+
+      if (!best) return;
+      link.setAttribute("href", best[0]);
+      link.textContent = best[2];
+      slot.hidden = false;
+    }
+
+    /* `loadIndex` returns early when the index is already here, so the loaded
+       case has to be handled rather than assumed to call back. */
+    if (indexDocs) offer();
+    else loadIndex(offer);
+  }
+
   /* ---- boot ------------------------------------------------------------ */
 
   function boot() {
@@ -1253,6 +1322,7 @@
     initRandomNote();
     initShortcuts();
     initToc();
+    initNotFound();
     initConsole();
   }
 

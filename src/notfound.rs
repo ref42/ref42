@@ -25,9 +25,12 @@ use crate::site::{self, Note, SECTIONS};
 /// ignored it.
 fn transcript(path: &str, suggestion: Option<&Note>) -> String {
     let mut out = String::new();
+    // The path is wrapped in an element the client script rewrites, because on
+    // static hosting one frozen `404.html` answers every missing URL and the only
+    // path it could otherwise name is the one the exporter happened to probe.
     let _ = writeln!(
         out,
-        "<span class=\"dim\">$</span> RUST_BACKTRACE=1 ref42 open {}",
+        "<span class=\"dim\">$</span> RUST_BACKTRACE=1 ref42 open <span id=\"panic-path\">{}</span>",
         xml_escape(path)
     );
     out.push_str("<span class=\"err\">thread 'main' panicked</span> at 'route not found',\n");
@@ -78,12 +81,25 @@ pub async fn page(cx: &Cx) -> Result<impl View> {
                     // is actually useful. It is a plain link rather than the
                     // primary button: titles are long, and a button that wraps to
                     // three lines reads worse than a sentence.
-                    if let Some(note) = suggestion {
-                        <p class="panic__meant">
-                            "Did you mean "
-                            <a href=(note.url)>(note.title)</a>
-                            "?"
-                        </p>
+                    // Offered when the server could work it out. On static
+                    // hosting it cannot — there is one 404 document for every
+                    // missing URL — so the same paragraph is always rendered and
+                    // left hidden for `app.js` to fill in and reveal.
+                    match suggestion {
+                        Some(note) => {
+                            <p class="panic__meant" id="panic-meant">
+                                "Did you mean "
+                                <a id="panic-meant-link" href=(note.url)>(note.title)</a>
+                                "?"
+                            </p>
+                        }
+                        None => {
+                            <p class="panic__meant" id="panic-meant" hidden="">
+                                "Did you mean "
+                                <a id="panic-meant-link" href="/"></a>
+                                "?"
+                            </p>
+                        }
                     }
 
                     <div class="panic__actions">
