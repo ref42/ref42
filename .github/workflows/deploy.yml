@@ -1,4 +1,10 @@
-name: Deploy to GitHub Pages
+name: Deploy
+
+# The site is a Rust binary, but the published artefact is plain files: every
+# page is a pure function of the compiled-in content and the request path, so
+# the binary is used to render once and the output goes to static hosting. That
+# keeps GitHub Pages (and its CDN) as the deployment target, with no process to
+# keep alive.
 
 on:
   push:
@@ -12,7 +18,14 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
+
+env:
+  # `build.rs` bakes this into canonical links, Open Graph tags, the feed and
+  # the sitemap, so it must be set for the *build*, not just the export.
+  SITE_BASE_URL: ${{ vars.SITE_BASE_URL || 'https://www.ref42.com' }}
+  HOST: 127.0.0.1
+  PORT: 3000
 
 jobs:
   build:
@@ -23,20 +36,54 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
-      - name: Install Zola
-        shell: bash
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Export to static files
+        # Serving and exporting happen in ONE step on purpose. A background
+        # process started in a previous step is not guaranteed to still be alive
+        # once that step's shell exits, and the failure mode would be an
+        # intermittent "fetch failed" in CI that works perfectly on every local
+        # run.
         run: |
-          curl -sSfL https://github.com/getzola/zola/releases/download/v0.22.1/zola-v0.22.1-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
-          tar -xzf zola.tar.gz
-          sudo mv zola /usr/local/bin/zola
+          ./target/release/ref42 > server.log 2>&1 &
+          server_pid=$!
 
-      - name: Build Zola site
-        run: zola build
+          up=""
+          for _ in $(seq 1 40); do
+            if curl -fsS "http://127.0.0.1:3000/" > /dev/null; then
+              up="yes"
+              break
+            fi
+            sleep 0.5
+          done
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
+          if [ -z "$up" ]; then
+            echo "server did not start; its log follows" >&2
+            cat server.log >&2
+            exit 1
+          fi
+
+          node scripts/export.mjs --out dist --base http://127.0.0.1:3000
+          kill "$server_pid" || true
+
+      - name: Check the export
+        run: |
+          test -f dist/index.html
+          test -f dist/404.html
+          test -f dist/main.css
+          test -f dist/sitemap.xml
+          test -f dist/feed.xml
+          echo "exported $(find dist -name 'index.html' | wc -l) pages"
+
+      - uses: actions/upload-pages-artifact@v5
         with:
-          path: public
+          path: dist
 
   deploy:
     needs: build
@@ -45,6 +92,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v5

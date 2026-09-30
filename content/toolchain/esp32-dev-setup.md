@@ -1,31 +1,33 @@
 ---
-title: '一分钟，搭建ESP32 Rust开发环境'
-description: '安装 esp-generate、espup 和 espflash，完成 ESP32 Rust 项目的生成、工具链安装和烧录准备。'
+title: 'Set up an ESP32 Rust environment in one minute'
+description: 'Install esp-generate, espup, and espflash to create ESP32 Rust projects and prepare the flashing toolchain.'
 weight: 30
+date: "2026-07-11"
+tags: [esp32, toolchain]
 ---
 
-## 注意
+## Before you start
 
-与`Cortex-M`系列单片机开发不同，`ESP32`的工具链稍显特殊，但是都属于一键式安装，遵循以下命令安装即可。
+Unlike the `Cortex-M` workflow, the `ESP32` toolchain has a few special steps, but each is a one-command installation.
 
 ---
 
-## 按照顺序，执行以下命令
+## Run these commands in order
 
 ```bash
-# 根据模板生成工程
+# Generate a project from a template
 cargo install esp-generate
-# esp32开发包安装工具
+# ESP32 toolchain installer
 cargo binstall espup
-# 安装esp32开发包
+# Install the ESP32 toolchain
 espup install
-# 安装烧录工具
+# Install the flashing tool
 cargo install espflash
 ```
 
-完成以上步骤之后，`ESP32`的开发环境就搭建完毕了。恭喜，你的技术栈又丰富了许多。
+After these commands, the `ESP32` development environment is ready.
 
-## 检查安装结果
+## Verify the installation
 
 ```bash
 esp-generate --version
@@ -33,10 +35,10 @@ espup --version
 espflash --version
 ```
 
-如果以上命令都能正常输出版本号，就可以继续阅读[ESP32模板工程](/esp32/esp-generate-template/)。
+If every command prints a version, continue with the [ESP32 template project](/esp32/esp-generate-template/).
 
-## 常见问题
+## Troubleshooting
 
-- `cargo binstall espup`失败时，可以先安装`cargo-binstall`，或者改用`cargo install espup`。
-- `espup install`完成后如果终端找不到 ESP 相关环境变量，重启终端后再试。
-- 烧录失败时，检查 USB 串口驱动、开发板端口占用和数据线是否支持传输。
+- If `cargo binstall espup` fails, install `cargo-binstall` first or use `cargo install espup`.
+- If the terminal cannot find ESP variables after `espup install`, restart the terminal.
+- If flashing fails, check the USB serial driver, port usage, and whether the cable supports data transfer.

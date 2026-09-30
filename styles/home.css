@@ -1,0 +1,103 @@
+/* ==========================================================================
+   ref42 · home
+   The page is the list. No masthead, no stat row, no card grid.
+   ========================================================================== */
+
+/* ---- note list --------------------------------------------------------- */
+
+/* The list is now the first thing under the header, so its block carries the
+   whole top gap itself. */
+.feed-block {
+  padding-block: clamp(3rem, 7vw, 5rem) var(--s-2xl);
+}
+
+/* One column: the list is the page, and long titles need the width. */
+.feed {
+  display: block;
+  margin-top: 0;
+  border-top: var(--hair) solid var(--line);
+}
+
+.note-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.15rem 0 1.15rem 0.9rem;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+/* Catalogue number in the muted mono voice. It makes a growing list read as
+   an index rather than a feed. */
+.note-row__node {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  color: var(--line-2);
+  transition: color var(--dur) var(--ease);
+}
+
+/* Indicator rail, scaled from zero rather than faded so the motion reads as
+   the row opening. Pinned to the row, so nothing reflows. */
+.note-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 220ms var(--ease);
+}
+
+.note-row:hover::before,
+.note-row:focus-visible::before {
+  transform: scaleY(1);
+}
+
+.note-row:hover .note-row__node,
+.note-row:focus-visible .note-row__node {
+  color: var(--accent);
+}
+
+.note-row__body {
+  min-width: 0;
+}
+
+.note-row__title {
+  display: block;
+  font-size: var(--t-base);
+  font-weight: 400;
+  line-height: 1.5;
+  /* Set explicitly rather than inherited: an inherited colour made titles
+     differ depending on row state, so some read as pure white and some pale. */
+  color: var(--ink);
+  transition: color var(--dur) var(--ease);
+}
+
+.note-row:hover .note-row__title {
+  color: var(--accent);
+}
+
+.note-row__desc {
+  display: -webkit-box;
+  margin-top: 0.3rem;
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--muted);
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.note-row__side {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}

@@ -1,0 +1,160 @@
+/* ==========================================================================
+   ref42 · shelf (section) pages
+   ========================================================================== */
+
+.shelf-head {
+  padding-block: clamp(3rem, 8vw, 5rem) var(--s-xl);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.shelf-head h1 {
+  margin-top: var(--s-md);
+  font-size: clamp(3rem, 7.5vw, 4.875rem);
+  font-weight: 400;
+}
+
+.shelf-head__lead {
+  max-width: 54ch;
+  margin-top: var(--s-sm);
+  font-size: var(--t-md);
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+/* The shelf intro is the body of the section's `_index.md`, rendered between
+   the header rule and the numbered list. `.prose` carries no width limit of its
+   own — inside a note the article grid supplies one — so the reading measure has
+   to be set here, or a long intro runs the full 94rem shell. */
+.shelf-intro {
+  padding-block: var(--s-lg) 0;
+  max-width: var(--measure);
+}
+
+/* ---- numbered article list -------------------------------------------- */
+
+.route-list {
+  margin-top: var(--s-xl);
+  border-top: var(--hair) solid var(--line);
+}
+
+.route-item {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--s-sm);
+  padding: 1.35rem 0;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.route-item__node {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.route-item__title {
+  display: block;
+  font-size: var(--t-md);
+  font-weight: 400;
+  line-height: 1.45;
+  transition: color var(--dur) var(--ease);
+}
+
+.route-item:hover .route-item__title {
+  color: var(--ink);
+}
+
+.route-item__desc {
+  display: block;
+  margin-top: 0.35rem;
+  max-width: 62ch;
+  font-size: var(--t-sm);
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.route-item__side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.route-item__side svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  stroke: currentColor;
+  fill: none;
+  transition: transform var(--dur) var(--ease);
+}
+
+.route-item:hover .route-item__side {
+  color: var(--muted);
+}
+
+.route-item:hover .route-item__side svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 40rem) {
+  .route-item {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+  .route-item__side {
+    display: none;
+  }
+}
+
+/* ---- shelf navigation -------------------------------------------------- */
+
+.shelf-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-sm);
+  margin-top: var(--s-xl);
+  padding-top: var(--s-lg);
+  border-top: var(--hair) solid var(--line);
+}
+
+.shelf-next a {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 13rem;
+  padding: var(--s-md);
+  border: var(--hair) solid var(--line);
+  border-radius: 0;
+  background: var(--bg-2);
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.shelf-next a:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.shelf-next a:not(:only-child):last-child {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.shelf-next .dir {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.shelf-next .name {
+  font-size: var(--t-base);
+  font-weight: 400;
+}

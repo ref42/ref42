@@ -1,0 +1,699 @@
+/* ==========================================================================
+   ref42 · note (article) pages
+
+   Three columns on a wide screen: contents rail, prose, and a facts rail.
+   Both margins do work, so the prose keeps a readable measure without the
+   page looking like a narrow column stranded in empty space.
+   ========================================================================== */
+
+.doc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-xl);
+  padding-block: var(--s-lg) var(--s-xl);
+  align-items: start;
+}
+
+/* Middle widths: contents rail + prose. */
+@media (min-width: 62rem) {
+  .doc {
+    grid-template-columns: minmax(12rem, 15rem) minmax(0, var(--measure));
+    column-gap: clamp(2.5rem, 5vw, 5rem);
+    justify-content: start;
+  }
+
+  .doc-side {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .doc-article {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* No room for the facts rail yet, so those facts live with the contents. */
+  .doc-rail {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: var(--s-xl);
+  }
+}
+
+/* Wide: add the facts rail on the right so both margins carry content. */
+@media (min-width: 84rem) {
+  .doc {
+    grid-template-columns:
+      minmax(12rem, 15rem)
+      minmax(0, var(--measure))
+      minmax(11rem, 14rem);
+    justify-content: space-between;
+  }
+
+  .doc-rail {
+    grid-column: 3;
+    grid-row: 1;
+    margin-top: 0;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-lg));
+  }
+}
+
+/* ---- breadcrumb + header ---------------------------------------------- */
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.crumbs a {
+  transition: color var(--dur) var(--ease);
+}
+
+.crumbs a:hover {
+  color: var(--accent);
+}
+
+.crumbs .sep {
+  color: var(--line-2);
+}
+
+.crumbs .here {
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 30ch;
+}
+
+.doc-head {
+  padding-block: var(--s-md) var(--s-lg);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.doc-head h1 {
+  margin-top: var(--s-sm);
+  font-size: clamp(2.625rem, 6.6vw, 3.9rem);
+}
+
+.doc-head .lead {
+  margin-top: var(--s-sm);
+}
+
+/* A single inline mono strip: section position, reading time, length. */
+.doc-head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: var(--s-md);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Separator between items, drawn as a CSS pseudo-element so the markup stays
+   a plain list of spans. */
+.doc-head__meta > * + *::before {
+  content: "·";
+  margin-right: 0.55rem;
+  color: var(--line-2);
+}
+
+/* ---- prose ------------------------------------------------------------- */
+
+.prose {
+  margin-top: var(--s-lg);
+  font-size: var(--t-md);
+  line-height: 1.8;
+  color: var(--ink-2);
+  overflow-wrap: break-word;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  position: relative;
+  scroll-margin-top: calc(var(--header-h) + 1rem);
+  color: var(--ink);
+}
+
+.prose h2 {
+  margin: var(--s-2xl) 0 var(--s-sm);
+  font-size: var(--t-xl);
+}
+
+.prose h3 {
+  margin: var(--s-xl) 0 var(--s-xs);
+  font-size: var(--t-lg);
+}
+
+.prose h4 {
+  margin: var(--s-lg) 0 var(--s-2xs);
+  font-size: var(--t-md);
+  color: var(--ink);
+}
+
+.prose .anchor {
+  position: absolute;
+  margin-inline-start: 0.4rem;
+  color: var(--line-2);
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.prose h2:hover .anchor,
+.prose h3:hover .anchor,
+.prose h4:hover .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose .anchor:hover {
+  color: var(--accent);
+}
+
+.prose p {
+  margin: var(--s-sm) 0;
+}
+
+.prose a:not(.anchor) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.prose ul,
+.prose ol {
+  margin: var(--s-sm) 0;
+  padding-inline-start: 1.3rem;
+  display: grid;
+  gap: 0.4rem;
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li::marker {
+  color: var(--accent);
+}
+
+.prose blockquote {
+  margin: var(--s-md) 0;
+  padding: 0.1rem 0 0.1rem 1.25rem;
+  border-inline-start: 2px solid var(--accent);
+  color: var(--ink-2);
+}
+
+.prose blockquote > :first-child {
+  margin-top: 0;
+}
+
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.prose hr {
+  margin: var(--s-xl) 0;
+  border-top: var(--hair) solid var(--line);
+}
+
+.prose :not(pre) > code {
+  padding: 0.12em 0.36em;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+/* ---- tables ------------------------------------------------------------ */
+
+.prose .table-wrap {
+  margin: var(--s-md) 0;
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+}
+
+.prose th {
+  padding: 0.7rem 0.9rem;
+  text-align: start;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: var(--hair) solid var(--line);
+  white-space: nowrap;
+}
+
+.prose td {
+  padding: 0.7rem 0.9rem;
+  border-bottom: var(--hair) solid var(--line);
+  vertical-align: top;
+}
+
+/* Tool names and other identifiers in the first table column are atomic
+   strings. Keep hyphenated names such as arm-none-eabi-gcc together. */
+.prose td:first-child {
+  white-space: nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---- code blocks ------------------------------------------------------- */
+
+.code-block {
+  position: relative;
+  margin: var(--s-md) 0;
+  border: var(--hair) solid var(--code-line);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+  overflow: hidden;
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem 0.5rem 0.85rem;
+  border-bottom: var(--hair) solid var(--code-line);
+}
+
+.code-block__dots {
+  display: none;
+}
+
+.code-block__lang {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--code-ink) 45%, transparent);
+}
+
+.code-copy {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-inline-start: auto;
+  border-radius: var(--radius);
+  color: color-mix(in oklab, var(--code-ink) 50%, transparent);
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.code-copy:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--code-ink);
+}
+
+.code-copy.is-copied {
+  color: var(--accent);
+}
+
+.code-copy svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  stroke: currentColor;
+  fill: none;
+}
+
+.prose pre {
+  margin: 0;
+  padding: var(--s-sm) 1rem;
+  overflow-x: auto;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  line-height: 1.7;
+  color: var(--code-ink);
+  tab-size: 2;
+}
+
+.prose pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  white-space: pre;
+}
+
+/* ---- images ------------------------------------------------------------ */
+
+.prose img,
+.article-image {
+  display: block;
+  max-width: 100%;
+  margin: var(--s-md) auto;
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* Every screenshot is wrapped in a `<picture>` that offers WebP first, so the
+   wrapper must not become a layout box. `.image-pair img` sizes the image as a
+   grid item (`width`/`height: 100%` with `object-fit: cover`), and an inline
+   `<picture>` in between would resolve that percentage height against an
+   auto-height parent and collapse the pairing. `display: contents` keeps the
+   image the layout child, exactly as it was before the wrapper existed. */
+.prose picture {
+  display: contents;
+}
+
+.prose .image-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-sm);
+  margin: var(--s-md) 0;
+}
+
+@media (min-width: 40rem) {
+  .prose .image-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.prose .image-pair img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.prose p[align="center"] img {
+  margin-inline: auto;
+}
+
+/* ---- contents rail ----------------------------------------------------- */
+
+.doc-side {
+  display: none;
+}
+
+@media (min-width: 62rem) {
+  .doc-side {
+    display: block;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-lg));
+    max-height: calc(100svh - var(--header-h) - 4rem);
+    overflow-y: auto;
+    padding-inline-end: var(--s-sm);
+    scrollbar-width: thin;
+  }
+}
+
+.doc-side h2 {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.toc {
+  position: relative;
+  display: grid;
+  gap: 0;
+  margin-top: var(--s-sm);
+  border-inline-start: var(--hair) solid var(--line);
+}
+
+/* Slides down the rail to sit alongside the heading you are reading. */
+.toc__marker {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: 0;
+  background: var(--accent);
+  transition:
+    transform var(--dur) var(--ease),
+    height var(--dur) var(--ease);
+}
+
+.toc a {
+  display: block;
+  padding: 0.4rem 0 0.4rem 0.9rem;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--muted);
+  transition: color var(--dur) var(--ease);
+}
+
+.toc a:hover {
+  color: var(--ink-2);
+}
+
+.toc a.is-active {
+  color: var(--ink);
+}
+
+.toc a.toc-child {
+  padding-inline-start: 1.7rem;
+  font-size: var(--t-xs);
+}
+
+.doc-side__facts {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: var(--s-lg);
+  padding-top: var(--s-md);
+  border-top: var(--hair) solid var(--line);
+}
+
+.doc-side h2 + .toc + .doc-side__facts {
+  margin-top: var(--s-lg);
+}
+
+/* The facts rail has no "On this page" heading, so its list needs no rule. */
+.doc-rail .doc-side__facts {
+  margin-top: 0;
+}
+
+.fact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+}
+
+.fact dt {
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.fact dd {
+  margin: 0;
+  color: var(--ink-2);
+  text-align: end;
+}
+
+/* Inline contents, shown only where the rail is hidden. */
+.toc-inline {
+  margin-top: var(--s-md);
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+}
+
+.toc-inline summary {
+  padding: 0.75rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.toc-inline .toc {
+  margin: 0;
+  border-inline-start: 0;
+  border-top: var(--hair) solid var(--line);
+  padding: 0.5rem 0.9rem 0.75rem;
+}
+
+.toc-inline .toc a {
+  padding-inline-start: 0;
+}
+
+.toc-inline .toc a.toc-child {
+  padding-inline-start: 0.9rem;
+}
+
+/* The rail replaces the inline list at the same breakpoint the rail appears. */
+@media (min-width: 62rem) {
+  .toc-inline {
+    display: none;
+  }
+}
+
+/* ---- prev / next ------------------------------------------------------- */
+
+.doc-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-sm);
+  margin-top: var(--s-2xl);
+  padding-top: var(--s-lg);
+  border-top: var(--hair) solid var(--line);
+}
+
+.doc-nav a {
+  display: grid;
+  gap: 0.3rem;
+  padding: var(--s-md);
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.doc-nav a:hover {
+  border-color: var(--line-2);
+  background: var(--surface);
+}
+
+.doc-nav a.next {
+  text-align: end;
+}
+
+.doc-nav .dir {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.doc-nav .name {
+  font-size: var(--t-sm);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* The staleness warning: the one place on the site where the red accent is
+   semantic rather than decorative. It says the advice below may be wrong, which
+   for a toolchain guide is worth interrupting the page for. */
+.stale-note {
+  max-width: 52ch;
+  margin-top: var(--s-md);
+  padding: 0.6rem 0.85rem;
+  border-inline-start: 2px solid var(--accent);
+  background: var(--accent-soft);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* ---- tags and related notes -------------------------------------------- */
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: var(--s-md);
+}
+
+/* Labels, not links. A tag has no page of its own yet, and a chip that looks
+   clickable but is not is worse than no chip at all — the tags still earn their
+   keep by feeding the search index and the "related notes" list. */
+.tag {
+  padding: 0.2rem 0.6rem;
+  border: var(--hair) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.related {
+  margin-top: var(--s-2xl);
+  padding-top: var(--s-lg);
+  border-top: var(--hair) solid var(--line);
+}
+
+.related h2 {
+  font-size: var(--t-lg);
+}
+
+.related-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: var(--s-sm);
+}
+
+@media (min-width: 48rem) {
+  .related-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.related-list a {
+  display: grid;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 0.7rem 0.9rem;
+  border: var(--hair) solid var(--line);
+  transition: border-color var(--dur) var(--ease);
+}
+
+.related-list a:hover {
+  border-color: var(--accent);
+}
+
+.related-list__section {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.related-list strong {
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--ink);
+}

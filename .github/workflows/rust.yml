@@ -1,0 +1,51 @@
+name: Rust
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: fmt, clippy, test, content lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all -- --check
+
+      # Runs before anything that would cache the build: the build script only
+      # reports content problems when it actually runs, and a warm target
+      # directory would otherwise turn this gate into a no-op that always passes.
+      - name: Content lint
+        run: |
+          set -o pipefail
+          touch build.rs
+          cargo build --all-targets 2>&1 | tee build.log
+          if grep -q '^warning: ref42@' build.log; then
+            echo "::error::the build reported content problems; see the warnings above"
+            exit 1
+          fi
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      # The transforms that rewrite content live in `src/pipeline.rs` precisely
+      # so this can exist: `cargo test` never runs a build script's own tests.
+      - name: Test
+        run: cargo test

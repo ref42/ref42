@@ -1,0 +1,203 @@
+/* ==========================================================================
+   ref42 · base + reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* No `scroll-behavior: smooth`. The native smooth scroll takes a duration
+     proportional to the distance, so any jump from far down a page crawls and
+     feels stalled. `scrollToY` in app.js animates in a fixed 380ms instead.
+     Without JS, jumps are instant. */
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  /* Iosevka ships at weight 400 only. Without this the browser synthesises
+     every 500/600 request by smearing the outline, which reads as a different,
+     blunter typeface. Hierarchy comes from size, case and colour instead. */
+  font-synthesis: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  /* Every heading is pure white, set here rather than inherited, so no title
+     can end up a paler shade because of an ancestor's colour. */
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+hr {
+  border: 0;
+  border-top: var(--hair) solid var(--line);
+  margin: var(--s-lg) 0;
+}
+
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.shell {
+  width: min(100% - 3rem, var(--shell));
+  margin-inline: auto;
+}
+
+@media (max-width: 40rem) {
+  .shell {
+    width: min(100% - 2rem, var(--shell));
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s-sm);
+  top: -4rem;
+  z-index: 200;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--t-sm);
+  transition: top var(--dur) var(--ease);
+}
+
+.skip-link:focus {
+  top: var(--s-sm);
+}
+
+/* ---- shared primitives ------------------------------------------------- */
+
+/* Small uppercase label with a short red rule: the one recurring motif. */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  background: var(--accent);
+  flex: none;
+}
+
+.lead {
+  max-width: 58ch;
+  margin: 0;
+  font-size: var(--t-md);
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+/* Section rhythm. */
+.block {
+  padding-block: var(--s-2xl);
+  border-top: var(--hair) solid var(--line);
+}
+
+/* Fade-in, applied by app.js. Content is visible without JS. */
+[data-reveal] {
+  opacity: 1;
+}
+
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+html.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 600ms var(--ease),
+    transform 600ms var(--ease);
+}

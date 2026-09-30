@@ -1,2 +1,22 @@
-public/
+# Rust
+/target/
+
+# Generated at build time by build.rs (stylesheet, client script, feed, sitemap
+# and the mirror of static/)
+/assets/
+
+# Prerendered output of `scripts/export.mjs`, published to static hosting
+/dist/
+
+# Local screenshot scratch space
+/.shots/
+
+# Font-download scratch (upstream stylesheets; the vendored output lives in
+# static/fonts and styles/fonts.css and is committed)
+/tools/.cache/
+
+# Older generated preview output
+/.preview-final/
+
+# GitHub Pages custom domain (kept for when hosting is decided)
 CNAME

@@ -1,0 +1,358 @@
+/* ========================================================================== 
+   ref42 · extras — 404, discussion, print
+   ========================================================================== */
+
+.panic {
+  display: grid;
+  gap: var(--s-xl);
+  padding-block: clamp(3rem, 9vw, 6rem);
+  align-items: center;
+}
+
+@media (min-width: 62rem) {
+  .panic {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s-2xl);
+  }
+}
+
+.panic h1 {
+  margin-top: var(--s-sm);
+  font-family: var(--font-mono);
+  font-size: clamp(2.1rem, 4.8vw, 3rem);
+  font-weight: 400;
+}
+
+.panic h1 .caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  margin-inline-start: 0.1em;
+  background: var(--accent);
+  vertical-align: -0.15em;
+}
+
+.panic .lead {
+  margin-top: var(--s-sm);
+}
+
+/* The "did you mean" line. Quieter than the buttons, and a link rather than a
+   button because note titles are long and a button that wraps to three lines
+   reads worse than a sentence. */
+.panic__meant {
+  margin-top: var(--s-md);
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.panic__meant a {
+  color: var(--accent);
+  border-bottom: var(--hair) solid currentColor;
+}
+
+.panic__meant a:hover {
+  border-bottom-color: transparent;
+}
+
+.panic__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: var(--s-lg);
+}
+
+/* ---- buttons ----------------------------------------------------------- */
+
+/* `notfound.rs` has always rendered `class="btn btn--primary"`, but no `.btn`
+   rule existed anywhere. The two calls to action rendered as bare text, and
+   their icons — with no width and no `stroke` rule, unlike every other icon in
+   the stylesheet — stretched to 264x264 of drawn-nothing space, which is what
+   pushed "Back home" and "Open toolchain section" 302px apart. The shell below
+   mirrors `.discussion__actions a`, the same control in the same voice. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  border: var(--hair) solid var(--line-2);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.btn svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  stroke: currentColor;
+  fill: none;
+}
+
+.btn:hover {
+  color: var(--ink);
+  border-color: var(--ink-2);
+}
+
+/* The accent fill carries black type; see the measurement note in tokens.css
+   for why white on red is not an option. */
+.btn--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn--primary:hover {
+  background: color-mix(in oklab, var(--accent) 85%, white);
+  border-color: color-mix(in oklab, var(--accent) 85%, white);
+  color: var(--accent-ink);
+}
+
+.panic__suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: var(--s-lg);
+}
+
+.panic__window {
+  margin: 0;
+  padding: var(--s-sm) 1rem var(--s-md);
+  border: var(--hair) solid var(--code-line);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+  overflow-x: auto;
+}
+
+.panic__window code {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  line-height: 1.9;
+  color: var(--code-ink);
+  white-space: pre;
+}
+
+.panic__window .err {
+  color: var(--accent);
+}
+
+.panic__window .dim,
+.panic__window .cmt {
+  color: color-mix(in oklab, var(--code-ink) 45%, transparent);
+}
+
+/* The transcript's "here is the way out" span. `notfound.rs` has always emitted
+   it, but no rule ever existed, so the hint rendered as ordinary muted code.
+   Brighter ink rather than a new hue: this palette has one accent and it already
+   means "error" two lines above. */
+.panic__window .ok {
+  color: var(--ink);
+}
+
+/* ---- discussion -------------------------------------------------------- */
+
+.discussion {
+  margin-top: var(--s-2xl);
+  padding-top: var(--s-lg);
+  border-top: var(--hair) solid var(--line);
+}
+
+.discussion__head {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: var(--s-md);
+}
+
+.discussion__head h2 {
+  font-size: var(--t-lg);
+}
+
+.discussion__head p {
+  max-width: 56ch;
+  font-size: var(--t-sm);
+  color: var(--muted);
+}
+
+.discussion__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--s-2xs);
+}
+
+.discussion__actions a {
+  padding: 0.4rem 0.8rem;
+  border: var(--hair) solid var(--line-2);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.discussion__actions a:hover {
+  color: var(--ink);
+  border-color: var(--ink-2);
+}
+
+.discussion__frame {
+  margin-top: var(--s-md);
+  padding: var(--s-sm);
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+/* ---- keyboard shortcuts overlay ---------------------------------------- */
+
+/* Built by `app.js` on first use, so the page carries nothing when scripting is
+   off. The panel is the only thing on the site with a shadow: it has to read as
+   floating above a page that is otherwise completely flat. */
+.shortcut-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: var(--s-md);
+  background: rgb(0 0 0 / 0.74);
+}
+
+.shortcut-overlay[hidden] {
+  display: none;
+}
+
+.shortcut-panel {
+  position: relative;
+  width: min(30rem, 100%);
+  padding: var(--s-md) var(--s-lg) var(--s-lg);
+  border: var(--hair) solid var(--line-2);
+  background: var(--bg);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.65);
+}
+
+.shortcut-panel h2 {
+  margin-bottom: var(--s-md);
+  font-size: var(--t-lg);
+}
+
+.shortcut-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: color var(--dur) var(--ease);
+}
+
+.shortcut-close:hover {
+  color: var(--ink);
+}
+
+/* A definition list is the honest markup for key/action pairs, but the browser
+   default indents `dd` by 40px and spaces the list itself. */
+.shortcut-list {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem var(--s-md);
+  margin: 0;
+  align-items: baseline;
+}
+
+.shortcut-list dt {
+  margin: 0;
+  text-align: end;
+}
+
+.shortcut-list dd {
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.shortcut-list kbd {
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: 0.15rem 0.45rem;
+  border: var(--hair) solid var(--line-2);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  text-align: center;
+  color: var(--ink);
+}
+
+/* ---- print ------------------------------------------------------------- */
+
+@media print {
+  :root {
+    --bg: #fff;
+    --bg-2: #fff;
+    --surface: #fff;
+    --ink: #000;
+    --ink-2: #333;
+    --muted: #666;
+    --line: #ddd;
+  }
+
+  .site-header,
+  .site-footer,
+  .to-top,
+  .progress,
+  .doc-side,
+  .discussion,
+  .doc-nav,
+  .toc-inline {
+    display: none !important;
+  }
+
+  .doc {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .prose a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* Flat tile mode: rectangular blocks, one amber action colour, no ornament. */
+.shelf-next a,
+.route-item,
+.note-row,
+.site-search,
+.prose .table-wrap,
+.code-block {
+  border-radius: 0;
+}
+
+.shelf-next a:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.shelf-next a:hover * {
+  color: inherit;
+}
+
+.prose .table-wrap,
+.code-block {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}

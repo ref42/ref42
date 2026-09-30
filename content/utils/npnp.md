@@ -1,28 +1,31 @@
 ---
-title: 'npnp：EDA 元件库导出 CLI'
-description: 'npnp 是一个用 Rust 编写的命令行工具，可以把 LCSC 元件数据导出为 Altium Designer 和 KiCad 可用的库。'
+title: 'npnp: EDA library export CLI'
+description: 'npnp is a Rust command-line tool that exports LCSC part data as libraries for Altium Designer and KiCad.'
 weight: 10
+date: "2026-07-15"
+updated: "2026-08-08"
+tags: [tools, eda, kicad]
 ---
 
 <p align="center">
   <img src="/utils/npnp.png" alt="npnp logo" width="260">
 </p>
 
-`npnp`（Normalize Pin Net Pad）面向脚本、批处理和 CI 工作流，把 LCSC / EasyEDA 元件数据导出为可以检查和使用的 EDA 库。
+`npnp` (Normalize Pin Net Pad) targets scripts, batch jobs, and CI workflows. It converts LCSC / EasyEDA part data into EDA libraries that you can review and use.
 
-> [项目仓库](https://github.com/ref42/npnp) · [下载 Releases](https://github.com/ref42/npnp/releases)
+> [Repository](https://github.com/ref42/npnp) · [Releases](https://github.com/ref42/npnp/releases)
 
-## 主要能力
+## Features
 
-- 导出 KiCad 的 Symbol、Footprint 和 3D 模型。
-- 导出 Altium Designer 的 `SchLib` 和 `PcbLib`。
-- 支持单个元件、文本文件批量导出，以及并行处理。
-- 支持合并库、向已有合并库追加元件和独立导出 3D 模型。
-- 支持中英文元数据，并在目标语言缺失时回退到源数据。
-- 支持 Windows、macOS 和 Linux 发布包。
-- 当前已知支持 KiCad 9.0+ 与 Altium Designer 23.x+。
+- Export KiCad symbols, footprints, and 3D models.
+- Export Altium Designer `SchLib` and `PcbLib` files.
+- Export one part or many parts from a text file, with parallel processing.
+- Merge libraries, append parts to an existing merged library, and export standalone 3D models.
+- Support bilingual metadata with a fallback to source data when a translation is unavailable.
+- Provide release packages for Windows, macOS, and Linux.
+- Known support includes KiCad 9.0+ and Altium Designer 23.x+.
 
-## 常用命令
+## Common commands
 
 ```bash
 npnp search C2040 --limit 5
@@ -34,9 +37,9 @@ npnp kicad export C2040 --full --output kicad-libs --library-name MyParts --forc
 npnp kicad batch --input ids.txt --output generated/kicad --library-name MyParts --full --force --parallel 4 --continue-on-error
 ```
 
-不确定参数组合时，可以运行 `npnp --prompt` 查看可直接复制的命令。
+When you are unsure about an option combination, run `npnp --prompt` to see copy-ready commands.
 
-## 导出预览
+## Export previews
 
 <div class="image-pair">
   <img src="/utils/npnp/kicad_symbol.png" alt="KiCad symbol export">
@@ -53,8 +56,8 @@ npnp kicad batch --input ids.txt --output generated/kicad --library-name MyParts
   <img src="/utils/npnp/sch_01.png" alt="Altium schematic library export">
 </div>
 
-## 使用提醒
+## Notes
 
-自动生成库并不替代工程检查。将库用于正式项目之前，仍然建议在目标 EDA 工具中检查符号、封装、3D 模型和元数据。
+Generated libraries still require engineering review. Before using one in a production project, inspect its symbols, footprints, 3D models, and metadata in the target EDA tool.
 
-需要图形界面时，可以使用同系列的 [`SeEx`](/utils/seex/)；需要命令行、脚本或 CI 时，`npnp` 更合适。
+Use the companion [`SeEx`](/utils/seex/) application when you want a graphical interface; `npnp` is better for command lines, scripts, and CI.

@@ -1,32 +1,34 @@
 ---
-title: "实用工具安装"
-description: '安装 probe-rs-tools、cargo-binutils 和 llvm-tools，用于 Rust 嵌入式固件烧录、复位和体积分析。'
+title: "Install useful tools"
+description: 'Install probe-rs-tools, cargo-binutils, and llvm-tools for flashing, resetting, and analyzing Rust embedded firmware.'
 weight: 40
+date: "2026-07-11"
+tags: [toolchain, probe-rs]
 ---
 
-## 下载/调试工具
-配合`cargo`可以一键下载运行程序，也可以单独使用，用于烧录并复位芯片。
+## Flashing and debugging tools
+With `cargo`, probe-rs can download and run a program in one step. It can also be used directly to flash and reset a chip.
 
 ```bash
 cargo install probe-rs-tools
 ```
-### 单独使用 probe-rs
+### Use probe-rs directly
 
 ```bash
-# 将xxx.elf固件烧录到目标芯片
+# Flash an xxx.elf firmware image to the target chip
 probe-rs download xxx.elf --chip STM32F405RG
-# 复位目标芯片
+# Reset the target chip
 probe-rs reset --chip STM32F405RG
 ```
-## 零碎工具
+## Supporting tools
 
 ```bash
 cargo install cargo-binutils
 rustup component add llvm-tools
 ```
-包含以下这些工具
+These commands provide the following tools:
 
-| Cargo 封装工具 | Rust 原生底层工具 |
+| Cargo wrapper | Native Rust tool |
 | -------------- | ----------------- |
 | `cargo-cov.exe` | `rust-ar.exe`     |
 | `cargo-nm.exe`  | `rust-as.exe`     |
@@ -41,7 +43,7 @@ rustup component add llvm-tools
 |                    | `rust-size.exe`     |
 |                    | `rust-strip.exe`    |
 
-使用`cargo-size `查看固件大小
+Use `cargo-size` to inspect firmware size.
 
 ```bash
 D:\MCU-Projects\STM32-Projects\RUST\h7\embassy\embassy_h7_blink>cargo size
@@ -50,8 +52,8 @@ D:\MCU-Projects\STM32-Projects\RUST\h7\embassy\embassy_h7_blink>cargo size
   31488      80    5532   37100    90ec embassy_h7_blink
 ```
 
-## 常见问题
+## Troubleshooting
 
-- `probe-rs`找不到芯片时，确认`--chip`名称是否与 probe-rs 支持列表一致。
-- 烧录失败时，先检查调试器连接、目标板供电和芯片是否处于可调试状态。
-- `cargo size`无法运行时，确认已经安装`cargo-binutils`并添加`llvm-tools`组件。
+- If `probe-rs` cannot find a chip, check that `--chip` matches its supported list.
+- If flashing fails, check the debugger connection, board power, and debug state.
+- If `cargo size` does not run, install `cargo-binutils` and add the `llvm-tools` component.

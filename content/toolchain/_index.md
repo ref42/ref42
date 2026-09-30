@@ -1,13 +1,12 @@
 ---
-title: "开发工具链"
-description: "Rust 嵌入式开发的基础工具链、target、烧录和调试工具。"
-sort_by: "weight"
-template: "section.html"
-page_template: "page.html"
+title: "Development Toolchain"
+short: "Toolchain"
+order: 0
+description: "The core toolchain, targets, flashing tools, and debuggers for Rust embedded development."
 ---
 
-## Rust 嵌入式开发工具链
+## Rust Embedded Development Toolchain
 
-本系列介绍如何搭建 Rust 嵌入式开发环境，涵盖多个 MCU 平台的工具链配置。推荐按照顺序阅读，若是觉得文字版本的教程难以理解，也可以直接[跳转UP的B站观看视频教程](https://space.bilibili.com/3493142393260061)。
+This series explains how to set up a Rust embedded development environment across multiple MCU platforms. Read the guides in order, or [watch the video tutorials](https://space.bilibili.com/3493142393260061) if you prefer a visual walkthrough.
 
 ---

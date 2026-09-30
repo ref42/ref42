@@ -1,0 +1,31 @@
+[package]
+name = "ref42"
+version = "0.1.0"
+edition = "2024"
+description = "ref42 —  development notes"
+license = "MIT"
+
+[dependencies]
+topcoat = { version = "0.9.0", features = [
+    "view",
+    "router",
+    "serve",
+    "discover",
+] }
+tokio = { version = "1.53.1", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+# Pinned exactly: comrak's option API changes between releases, and `build.rs`
+# post-processes its rendered output.
+comrak = "=0.55.0"
+syntect = { version = "5.3.0", default-features = false, features = [
+    "default-fancy",
+    "parsing",
+    "regex-fancy",
+    "dump-load",
+] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true

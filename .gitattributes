@@ -1,0 +1,27 @@
+# Normalise every text file to LF, in the repository and in the working tree.
+#
+# Without this, `core.autocrlf=true` on Windows rewrites CRLF on checkout while
+# files written by editors stay LF, so one tree ends up mixed — `content/utils/
+# _index.md` was literally half CRLF and half LF. `build.rs` used to defend
+# against that with an explicit `\r\n` pass in `split_frontmatter`; the real fix
+# belongs here, at the source. `eol=lf` overrides `core.autocrlf` on checkout,
+# so the working tree stays consistent whichever machine clones it.
+* text=auto eol=lf
+
+# Binary media must never be line-ending converted or diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+
+# The lockfile is generated and must stay byte-exact.
+Cargo.lock text eol=lf

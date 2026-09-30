@@ -1,33 +1,36 @@
 ---
-title: 'SeEx：EDA 元件库导出的桌面工具'
-description: 'SeEx 是一个用 Rust 和 egui/eframe 构建的桌面工具，用于批量导出 LCSC 元件到 KiCad 和 Altium Designer。'
+title: 'SeEx: desktop EDA library exporter'
+description: 'SeEx is a Rust desktop application built with egui/eframe for batch-exporting LCSC parts to KiCad and Altium Designer.'
 weight: 20
+date: "2026-07-15"
+updated: "2026-08-08"
+tags: [tools, eda, kicad]
 ---
 
 <p align="center">
-  <img src="/utils/seex.png" alt="SeEx logo" width="220">
+  <img src="/utils/seex.svg" alt="SeEx logo" width="220">
 </p>
 
-`SeEx`（Seek and Export）把元件搜索、清单整理和 EDA 库导出集中到一个桌面工作流里。它支持 KiCad 与 Altium Designer，并且可以批量处理多个元件。
+`SeEx` (Seek and Export) combines part search, list management, and EDA library export in one desktop workflow. It supports KiCad and Altium Designer and can process many parts at once.
 
-> [项目仓库](https://github.com/ref42/seex) · [下载 Releases](https://github.com/ref42/seex/releases)
+> [Repository](https://github.com/ref42/seex) · [Releases](https://github.com/ref42/seex/releases)
 
-## 主要能力
+## Features
 
-- 导出 KiCad 的 Symbol、Footprint 和 3D 模型。
-- 导出 Altium Designer 的 `SchLib` 和 `PcbLib`。
-- 支持单个导出、批量导出，以及合并到同一个库。
-- 支持中英文元数据、多线程下载和独立导出 3D 模型。
-- 支持自定义原理图描边与填充颜色。
-- 当前已知支持 KiCad 9.0+ 与 Altium Designer 23.x+。
+- Export KiCad symbols, footprints, and 3D models.
+- Export Altium Designer `SchLib` and `PcbLib` files.
+- Export one part, many parts, or merge exports into one library.
+- Support bilingual metadata, multithreaded downloads, and standalone 3D model export.
+- Customize schematic outline and fill colors.
+- Known support includes KiCad 9.0+ and Altium Designer 23.x+.
 
-## 使用方式
+## Usage
 
-打开 SeEx 后，可以在 Monitor 页面确认元件输入，再到 Export 页面选择目标 EDA、元数据语言、导出范围和批量选项。适合不想频繁记忆命令，又需要重复导出元件库的场景。
+After opening SeEx, review part inputs on the Monitor page, then use Export to choose the target EDA tool, metadata language, export scope, and batch options. It is useful when you repeatedly export libraries without wanting to memorize commands.
 
-SeEx 当前已经直接包含导出能力，不再依赖单独安装的 `npnp` CLI。需要脚本、CI 或纯命令行工作流时，可以使用同系列的 [`npnp`](/utils/npnp/)。
+SeEx includes the exporter directly and no longer requires a separate `npnp` CLI installation. For scripts, CI, or a command-line-only workflow, use [`npnp`](/utils/npnp/).
 
-## 界面预览
+## Interface preview
 
 <div class="image-pair">
   <img src="/utils/seex/1.png" alt="SeEx interface preview 1">
@@ -39,6 +42,6 @@ SeEx 当前已经直接包含导出能力，不再依赖单独安装的 `npnp` C
   <img src="/utils/seex/4.png" alt="SeEx interface preview 4">
 </div>
 
-## 技术栈
+## Technology
 
-SeEx 使用 Rust、egui 和 eframe 构建，目标是让“找到元件、整理清单、导出库”这条路径更直接。
+SeEx is built with Rust, egui, and eframe to make the path from finding parts to organizing a list and exporting a library more direct.

@@ -1,0 +1,9 @@
+﻿/* Iosevka, self-hosted. */
+@font-face {
+  font-family: 'Iosevka Web';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/iosevka-latin-400-normal.woff2?v=iosevka-2') format('woff2');
+  unicode-range: U+0000-024F;
+}

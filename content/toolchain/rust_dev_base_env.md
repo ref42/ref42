@@ -1,91 +1,93 @@
 ---
-title: '五分钟，搭建Rust嵌入式开发环境'
-description: '在 Windows 上安装 VSCode、Visual Studio Community Edition 和 Rust 工具链，完成 Rust 嵌入式开发的基础环境配置。'
+title: 'Set up a Rust embedded environment in five minutes'
+description: 'Install VSCode, Visual Studio Community Edition, and the Rust toolchain on Windows for embedded development.'
 weight: 10
 slug: rust_dev_base_env
+date: "2026-07-11"
+tags: [toolchain, windows]
 ---
 
-## 前言
+## Introduction
 
-这是`Rust`开发单片机系列教程的第一个教程。此教程会为大家演示如何配置一个基础的`Rust`开发环境。
+This is the first guide in the Rust microcontroller series. It shows how to configure a basic `Rust` development environment.
 <img 
   src="/toolchain-images/letmesee.jpg" 
   alt="let me see reaction image" 
   class="article-image"
 />
-需要说明的是，与传统是同`C/CPP`语言开发单片机不同，`Rust`开发单片机只需要配置一个开发环境即可。不再需要使用诸如`Keil-uVision5`，`IAR`, `SES`, `MRS/MRS2`, `STM32CubeIDE`等`IDE`。
+Unlike traditional microcontroller development with `C/C++`, `Rust` needs one general development environment. You do not need IDEs such as `Keil-uVision5`, `IAR`, `SES`, `MRS/MRS2`, or `STM32CubeIDE`.
 
-本教程主要演示如何在`Windows`平台配置开发环境，如果你是`Linux`用户，配置会更简单，有差异的步骤会单独指出，方便一个教程兼容多个平台。
+This guide uses `Windows`. The setup is simpler on `Linux`; platform differences are called out where needed.
 
-## 准备清单
+## Checklist
 
-| 项目 | 说明 |
+| Item | Details |
 | --- | --- |
-| 操作系统 | Windows 为主，Linux 可参考差异说明 |
-| 编辑器 | VSCode |
-| 编译依赖 | Visual Studio Community Edition |
-| Rust安装器 | rustup-init.exe |
-| 预期结果 | 终端可以正常执行`cargo`、`rustc`、`rustup` |
+| Operating system | Windows (Linux notes are included where relevant) |
+| Editor | VSCode |
+| Build dependency | Visual Studio Community Edition |
+| Rust installer | rustup-init.exe |
+| Expected result | The terminal can run `cargo`, `rustc`, and `rustup` |
 
-对于已经尝试过`Rust`开发，觉得`Rust`并没有帮你解决问题，也没有达到预期效果，想要卸载`Rust`的用户，只需要打开终端，输入以下命令，再输入`y`，按下`Enter`，便可卸载`Rust`。
+If you have tried `Rust` and want to remove it, open a terminal, run the command below, type `y`, and press `Enter`.
 ```bash
 rustup self uninstall
 ```
 ![rustup self uninstall confirmation](/toolchain-images/uninstall_rust.png)
 
-此次需要安装的软件如下：
+Install the following software:
 - [`VSCode`](https://code.visualstudio.com/download#)
-- > 代码编辑器，提供现代化的代码编辑体验。
+- > A code editor with a modern editing experience.
 - [`Visual Studio Community Edition`](https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=community&channel=stable&version=VS18&source=VSLandingPage&cid=2500:4dbd59610b8e40148050ac727642c374)
-- > 提供一些底层的`SDK`和`linker`，使用`MSVC ABI`
+- > Provides the low-level `SDK` and `linker` used by the `MSVC ABI`.
 - [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
-- > `rust`安装引导程序
+- > The `rust` installation bootstrapper.
 
-若是你的电脑上已经存在了部分软件，例如`VSCode`和`Visual Studio Community Edition`，那就太好了，你只需要做很少的工作即可开始`Rust`开发，不仅是开发`MCU`等。
+If `VSCode` and `Visual Studio Community Edition` are already installed, you can start `Rust` development with only a few additional steps.
 
-`VSCode`和`Visual Studio Community Edition`的安装不会难住任何人，特别是本频道的各位，所以大家点击上方链接，直接跳转到下载页进行安装即可。
+Install `VSCode` and `Visual Studio Community Edition` from the links above.
 
 ---
 
-## 安装 VSCode 和 Visual Studio Community Edition
+## Install VSCode and Visual Studio Community Edition
 
-看到这一行的时候，我会默认你已经安装了`VSCode`和`Visual Studio Community Edition`，从这一段之后便是正式的配置环节。
+The steps below assume that `VSCode` and `Visual Studio Community Edition` are installed.
 
-第一步，配置`VSCode`，这一步最好是新建一个`profile`来作为`rust`开发环境，不要与其他的工具链混用。之后再安装以下插件即可。
+First, configure `VSCode`. Create a dedicated `profile` for `Rust` so it does not mix with other toolchains, then install these extensions:
 - `rust analyzer`
 - `even better toml`
 - `dependi`
 
-第二步，打开`Visual Studio Installer`，这个软件是用于安装`Visual Studio Community Edition`的。
+Next, open `Visual Studio Installer`, which manages `Visual Studio Community Edition`.
 
-确保你安装了以下这些`组件`。以截图形式给出，自行对照安装即可。
+Make sure the following `components` are installed. Compare the screenshots with your installer.
 
-打开`Visual Studio Installer`之后，点击红色箭头指示的`Modify`。
+Open `Visual Studio Installer` and click the `Modify` button highlighted in the screenshot.
 ![Visual Studio Installer modify button](/toolchain-images/visual_studio_installer_startup.png)
 
-在弹出的窗口里确保红色箭头指示的这些组件被成功安装。
+In the dialog, make sure the highlighted components are selected and installed.
 
 ![Visual Studio desktop development workload selected](/toolchain-images/visual_studio_installer_desktop_dev.png)
 
 ![Windows SDK component selected in Visual Studio Installer](/toolchain-images/visual_studio_installer_win_sdk.png)
 
-至此，已经完成`2/3`的进度了。
+Two of the three setup stages are complete.
 
 ---
 
-## 安装 Rust
+## Install Rust
 
-第三步，安装`Rust`。
+The third stage installs `Rust`.
 
-由于默认安装会将整个`Rust`工具链安装到`C`盘，考虑到部分开发者的`C`可能甚至没有`512GB`，故先配置环境变量，便于将`Rust`工具链安装到其他空间充裕的盘符。
+The default installer places the entire `Rust` toolchain on the `C` drive. Set environment variables first if you want to use another drive.
 
-教程里演示的是安装到`D`盘，先在`D`盘新建两个目录，用于安装`Rust`工具链。
+This guide uses the `D` drive. Create two directories there for the `Rust` toolchain.
 
 ---
 
-### 配置环境变量
+### Configure environment variables
 
-具体操作步骤：新建文件夹/目录，命名为`RUST`，进入`RUST`文件夹/目录，新建两个目录，分别为`.cargo`和`.rustup`。
+Create a directory named `RUST`, open it, and create `.cargo` and `.rustup` directories inside.
 
 ```bash
 # variable name
@@ -105,43 +107,43 @@ D:\RUST\.cargo
 ```
 ![CARGO_HOME environment variable path](/toolchain-images/cargo_env_path.png)
 
-环境变量配置完成。
+The environment variables are configured.
 
-双击打开`rustup-init.exe`
+Double-click `rustup-init.exe`.
 
-可以在终端里看到红色箭头指示的内容，则说明`Rust`工具链安装的环境变量配置成功。
+The highlighted output in the terminal confirms that the environment variables are ready for the `Rust` toolchain.
 
 ![rustup-init startup options](/toolchain-images/rustup_init_startup.png)
 
-随后，输入`2`，按下`Enter`。
+Enter `2` and press `Enter`.
 ![rustup customize installation menu](/toolchain-images/rustup_init_cusomize_installation.png)
-紧接着会弹出确认信息，继续按`Enter`。
+When the confirmation appears, press `Enter` again.
 ![rustup host triple confirmation](/toolchain-images/rustup_init_cusomize_installation_host.png)
-随后会弹出确认`toolchain`选择信息，此时输入`nightly`并且按下`Enter`。
+When the `toolchain` selection appears, enter `nightly` and press `Enter`.
 ![rustup toolchain selection prompt](/toolchain-images/rustup_init_cusomize_installation_toolchain.png.png)
-随后还会确认`profile`，按`Enter`即可。
+Accept the `profile` selection with `Enter`.
 ![rustup profile selection prompt](/toolchain-images/rustup_init_cusomize_installation_profile.png)
-最后会询问是否要`modify`环境变量，也就是采用我们之前配置的环境变量。输入`y`并且按下`Enter`。
+When asked whether to `modify` the environment variables, enter `y` and press `Enter` to use the values configured earlier.
 ![rustup PATH modification prompt](/toolchain-images/rustup_init_cusomize_installation_path.png)
-按下`Enter`之后，会再次出现以下提示信息。
+Another prompt appears after you press `Enter`.
 ![rustup installation confirmation screen](/toolchain-images/rustup_init_cusomize_installation_final.png)
-此时，只需要按下`Enter`即可。
+Press `Enter` to continue.
 ![rustup installation progress](/toolchain-images/rustup_init_cusomize_installation_process.png)
-看到终端里的`Rust is installed now. Great!`，则说明此次安装圆满完成。
+The message `Rust is installed now. Great!` confirms a successful installation.
 ![Rust installed successfully message](/toolchain-images/OK.png)
 
-以上步骤对于新手来说，可能稍显繁琐，但这是实践下来，个人认为比较满意的安装方式。
+These steps may feel long for beginners, but they provide a predictable installation layout.
 
-如果你使用的是`Linux`，只需要你安装了`gcc`，然后，直接在官网复制安装命令，进行安装即可，环境配置的操作是一样的，无非是将其写进`.bashrc`，但大多数时候默认安装即可。
+On `Linux`, install `gcc` and run the official installation command. The environment variables work the same way, usually by adding them to `.bashrc`; the defaults are often sufficient.
 
-至此，`Windows`平台的`Rust`开发环境就算搭建完成了，这个环境可以理解为一个基础环境。你可以选择用其开发桌面应用、命令行工具，也可以在其基础上添加一些工具，用来做嵌入式开发。
+The basic `Rust` environment on `Windows` is now ready. Use it for desktop applications and command-line tools, or add platform tools for embedded development.
 
 ---
 
-## 资料推荐
+## Recommended resources
 
-若想要进一步学习`Rust`，也可以给大家推荐一些资源。
-- [B站杨旭老师的视频](https://www.bilibili.com/video/BV1hp4y1k7SV?spm_id_from=333.1387.collection.video_card.click)
+For further `Rust` learning, these resources are useful:
+- [Yang Xu's video course](https://www.bilibili.com/video/BV1hp4y1k7SV?spm_id_from=333.1387.collection.video_card.click)
 
 <img
 src="/toolchain-images/yangxu_bilibili.png"
@@ -149,8 +151,8 @@ alt="rust_book"
 class="article-image"
 />
 
-- [Rust圣经](https://doc.rust-lang.org/book/title-page.html)
-- >这本书可以结合视频一起看。
+- [The Rust Book](https://doc.rust-lang.org/book/title-page.html)
+- > Read this book alongside the video course.
 
 <img
 src="/toolchain-images/rust_book.png"
@@ -166,8 +168,8 @@ class="article-image"
   class="article-image"
 />
 
-## 常见问题
+## Troubleshooting
 
-- 终端找不到`cargo`时，重新打开终端，或检查`CARGO_HOME`和`PATH`是否已经生效。
-- 安装卡住时，优先确认网络代理、杀毒软件和系统权限是否影响下载。
-- 后续开发某个芯片平台前，还需要继续安装对应平台的`target`、烧录工具和调试工具。
+- If the terminal cannot find `cargo`, open a new terminal or check that `CARGO_HOME` and `PATH` are active.
+- If installation stalls, check the network proxy, antivirus software, and system permissions.
+- Before developing for a chip platform, install its `target`, flashing tool, and debugger.
