@@ -386,14 +386,39 @@
    * `indexDocs` directly. */
   var indexDocs = null;
   var indexRequested = false;
+  /* Callbacks waiting for the index. There are three callers now — the search,
+     the random button and the 404's suggestion — and more than one of them can
+     want the index before it has arrived. Answering only the caller that
+     happened to start the request silently drops the others, which is exactly
+     how the 404's suggestion went missing while the search worked. */
+  var indexWaiters = [];
+
+  function deliverIndex() {
+    var waiting = indexWaiters;
+    indexWaiters = [];
+    waiting.forEach(function (fn) {
+      fn();
+    });
+  }
 
   function loadIndex(done) {
-    if (indexRequested || indexDocs !== null) return;
+    if (typeof done === "function") {
+      if (indexDocs) {
+        /* Already here: answer now rather than leaving the caller waiting for a
+           request that will never be made. */
+        done();
+        return;
+      }
+      indexWaiters.push(done);
+      if (indexRequested) return; // joins the request already in flight
+    } else if (indexRequested || indexDocs !== null) {
+      return;
+    }
 
     var legacy = window.__REF42_INDEX__;
     if (Array.isArray(legacy)) {
       indexDocs = legacy;
-      if (typeof done === "function") done();
+      deliverIndex();
       return;
     }
 
@@ -416,17 +441,20 @@
         /* The server's ETag means a repeat fetch is usually a 304, which the
            browser resolves from cache as a normal response, body and all. If
            the shape is ever anything else this is a miss, not a crash. */
-        if (!value || !Array.isArray(value.docs)) return;
+        if (!value || !Array.isArray(value.docs)) {
+          indexWaiters = [];
+          return;
+        }
         indexDocs = value.docs;
-        /* The loader is shared, so the caller decides what a fresh index
-           means: the search re-runs the pending query, the random button picks
-           a note. */
-        done();
+        deliverIndex();
       })
       .catch(function () {
         /* Offline, a 404, or a body that is not JSON: search just stays
            empty. No logging, and no retry — `indexRequested` is already
-           true, so a broken index is asked for exactly once. */
+           true, so a broken index is asked for exactly once. The waiters are
+           dropped rather than left holding closures for a request that will
+           not be repeated. */
+        indexWaiters = [];
       });
   }
 
