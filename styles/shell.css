@@ -24,7 +24,9 @@
   top: 0;
   z-index: 80;
   height: var(--header-h);
-  background: var(--bg);
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: var(--hair) solid var(--line);
 }
 
@@ -124,7 +126,7 @@
 .icon-link:hover,
 .nav-burger:hover {
   color: var(--ink);
-  background: var(--surface);
+  background: var(--surface-2);
 }
 
 .icon-link svg,
@@ -231,7 +233,8 @@
   padding: 0.4rem;
   border: var(--hair) solid var(--line-2);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--surface-2);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.5);
 }
 
 .search-result {
@@ -244,7 +247,7 @@
 
 .search-result:hover,
 .search-result.is-active {
-  background: var(--bg-2);
+  background: var(--surface-3);
 }
 
 .search-result strong {

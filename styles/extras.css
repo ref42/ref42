@@ -121,6 +121,27 @@
   margin-top: var(--s-lg);
 }
 
+.panic__copy {
+  padding: 0.4rem 0.9rem;
+  border: var(--hair) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.panic__copy:hover {
+  border-color: var(--line-2);
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
 .panic__window {
   margin: 0;
   padding: var(--s-sm) 1rem var(--s-md);
@@ -210,7 +231,7 @@
   padding: var(--s-sm);
   border: var(--hair) solid var(--line);
   border-radius: var(--radius);
-  background: var(--bg-2);
+  background: var(--surface);
 }
 
 /* ---- keyboard shortcuts overlay ---------------------------------------- */
@@ -295,6 +316,19 @@
   color: var(--ink);
 }
 
+/* ---- chip -------------------------------------------------------------- */
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 /* ---- print ------------------------------------------------------------- */
 
 @media print {
@@ -329,30 +363,4 @@
     font-size: 0.8em;
     color: #666;
   }
-}
-
-/* Flat tile mode: rectangular blocks, one amber action colour, no ornament. */
-.shelf-next a,
-.route-item,
-.note-row,
-.site-search,
-.prose .table-wrap,
-.code-block {
-  border-radius: 0;
-}
-
-.shelf-next a:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-}
-
-.shelf-next a:hover * {
-  color: inherit;
-}
-
-.prose .table-wrap,
-.code-block {
-  background: var(--bg-2);
-  border: 1px solid var(--line);
 }
