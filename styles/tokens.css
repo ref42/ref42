@@ -45,7 +45,7 @@
   --s-3xl: 7rem;
 
   --hair: 1px;
-  --radius: 0;
+  --radius: 6px;
 
   --shell: 94rem;
   --measure: 52rem; /* ~70 characters at 20px - long-form reading width */
@@ -56,15 +56,21 @@
 
   /* One palette only. The design is dark by definition, so there is no
      light variant and no theme switching — a half-considered light mode is
-     worse than none. */
-  --bg: #000000;
-  --bg-2: #000000;
-  --surface: #111111;
+     worse than none.
+
+     Tonal ladder: five surface levels rising from near-black, each tinted
+     toward a technical/data domain (cool slate-cyan) rather than neutral gray.
+     The deepest surface sits at 3% lightness, building to 9% at the highest. */
+  --bg: #050a0f;
+  --bg-2: #0a0f14;
+  --surface: #0f141a;
+  --surface-2: #141a21;
+  --surface-3: #1a2129;
   --ink: #ffffff;
-  --ink-2: #d0d0d0;
-  --muted: #888888;
-  --line: #333333;
-  --line-2: #666666;
+  --ink-2: #d4d8dc;
+  --muted: #8a9199;
+  --line: #2a3139;
+  --line-2: #3a4149;
 
   /* One accent, red: black canvas, white type, a single saturated red. This
      file's own header has said "one red accent" since before the amber detour,
@@ -90,7 +96,7 @@
   --accent-soft: rgb(255 45 45 / 0.16);
   --selection: rgb(255 45 45 / 0.32);
 
-  --code-bg: #1f1f1f;
-  --code-line: #444444;
-  --code-ink: #f3f3f3;
+  --code-bg: #0d1116;
+  --code-line: #1f262e;
+  --code-ink: #e8ecf0;
 }

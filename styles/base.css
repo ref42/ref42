@@ -33,7 +33,7 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--bg);
+  background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklab, var(--bg) 97%, var(--surface)) 100%);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: var(--t-base);

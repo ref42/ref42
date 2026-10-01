@@ -303,6 +303,7 @@
   border-radius: var(--radius);
   background: var(--code-bg);
   overflow: hidden;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.3);
 }
 
 .code-block__bar {
@@ -585,15 +586,17 @@
   padding: var(--s-md);
   border: var(--hair) solid var(--line);
   border-radius: var(--radius);
-  background: var(--bg-2);
+  background: var(--surface);
   transition:
     border-color var(--dur) var(--ease),
-    background var(--dur) var(--ease);
+    background var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
 .doc-nav a:hover {
   border-color: var(--line-2);
-  background: var(--surface);
+  background: var(--surface-2);
+  transform: translateY(-2px);
 }
 
 .doc-nav a.next {
@@ -643,10 +646,25 @@
 .tag {
   padding: 0.2rem 0.6rem;
   border: var(--hair) solid var(--line);
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   letter-spacing: 0.08em;
   color: var(--muted);
+}
+
+/* chip: inline metadata labels in facts rail and elsewhere */
+.chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: var(--hair) solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  background: var(--surface);
+  white-space: nowrap;
 }
 
 .related {
@@ -677,11 +695,18 @@
   height: 100%;
   padding: 0.7rem 0.9rem;
   border: var(--hair) solid var(--line);
-  transition: border-color var(--dur) var(--ease);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
 .related-list a:hover {
-  border-color: var(--accent);
+  border-color: var(--line-2);
+  background: var(--surface-2);
+  transform: translateY(-2px);
 }
 
 .related-list__section {

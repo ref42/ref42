@@ -44,6 +44,11 @@
   gap: var(--s-sm);
   padding: 1.35rem 0;
   border-bottom: var(--hair) solid var(--line);
+  transition: background var(--dur) var(--ease);
+}
+
+.route-item:hover {
+  background: var(--surface);
 }
 
 .route-item__node {
@@ -128,17 +133,19 @@
   min-width: 13rem;
   padding: var(--s-md);
   border: var(--hair) solid var(--line);
-  border-radius: 0;
-  background: var(--bg-2);
+  border-radius: var(--radius);
+  background: var(--surface);
   transition:
     border-color var(--dur) var(--ease),
-    background var(--dur) var(--ease);
+    background var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
 .shelf-next a:hover {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--accent-ink);
+  transform: translateY(-2px);
 }
 
 .shelf-next a:not(:only-child):last-child {
