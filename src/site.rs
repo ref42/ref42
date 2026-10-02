@@ -53,10 +53,6 @@ pub fn siblings(url: &str) -> (Option<&'static Note>, Option<&'static Note>) {
     (prev, next)
 }
 
-pub fn total_minutes() -> usize {
-    NOTES.iter().map(|n| n.minutes).sum()
-}
-
 /// Notes that share at least one tag with `note`, most-shared first.
 ///
 /// Ties keep the shelf reading order, because `NOTES` is already sorted and

@@ -311,27 +311,14 @@
 
 /* ---- footer ------------------------------------------------------------ */
 
+/* All that is left of the footer is the copyright line. The two link columns
+   went first (they duplicated the header's navigation and its icon links), then
+   the brand and the note-count sentence, so the rules for `.site-footer__inner`
+   and `.site-footer__brand` went with them rather than styling markup that no
+   longer exists. */
 .site-footer {
   margin-top: var(--s-2xl);
   border-top: var(--hair) solid var(--line);
-}
-
-.site-footer__inner {
-  display: grid;
-  gap: var(--s-lg);
-  padding-block: var(--s-xl);
-}
-
-/* This was `1.6fr 1fr 1fr` for a brand column beside two link columns. Those
-   duplicated the header's navigation and its two icon links, so they are gone;
-   with a single child a three-track grid would squeeze the brand into the
-   narrowest-looking third and leave two empty tracks beside it. */
-
-.site-footer__brand p {
-  max-width: 34ch;
-  margin-top: 0.75rem;
-  font-size: var(--t-sm);
-  color: var(--muted);
 }
 
 .site-footer__base {

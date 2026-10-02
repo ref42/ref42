@@ -11,7 +11,7 @@ use topcoat::{
 use crate::icons;
 use crate::icons::paths;
 use crate::pipeline::json_string_for_script;
-use crate::site::{self, GITHUB, NOTES, SECTIONS, SITE_BASE_URL};
+use crate::site::{self, GITHUB, SECTIONS, SITE_BASE_URL};
 
 /// Which shelf (if any) the current URL belongs to, for the active nav state.
 fn active_shelf(path: &str) -> String {
@@ -388,22 +388,9 @@ async fn header(active: String) -> Result<impl View> {
 
 #[component]
 async fn footer() -> Result<impl View> {
-    let minutes = site::total_minutes();
     Ok(view! {
         <footer class="site-footer">
             <div class="shell">
-                <div class="site-footer__inner">
-                    <div class="site-footer__brand">
-                        <span class="brand__name">"ref" <i>"42"</i></span>
-                        <p>
-                            "A notebook about Rust embedded development with "
-                            (NOTES.len())
-                            " notes and about "
-                            (minutes)
-                            " minutes of reading."
-                        </p>
-                    </div>
-                </div>
                 <div class="site-footer__base">
                     <span>"Copyright " (site::SITE_TITLE) " · my daily notes"</span>
                 </div>
