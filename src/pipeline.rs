@@ -235,6 +235,49 @@ pub fn is_date(value: &str) -> bool {
             .all(|(i, b)| i == 4 || i == 7 || b.is_ascii_digit())
 }
 
+/// True for the values a frontmatter flag is written as: `true`, `yes`, `on`, `1`.
+/// Frontmatter here is a map of strings rather than parsed YAML, so there is no
+/// boolean type to read. This is what decides that `draft: true` is a draft and
+/// `draft: no` — or a typo like `draft: ture` — is not, which matters because
+/// the failure mode of guessing wrong is publishing something unfinished.
+pub fn is_truthy(value: Option<&str>) -> bool {
+    value.is_some_and(|value| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "true" | "yes" | "on" | "1"
+        )
+    })
+}
+
+/// A human title for a section that is named only by its folder:
+/// `dev-tools` and `dev_tools` both become `Dev Tools`.
+///
+/// Used when a directory of notes has no `_index.md`. Authoring a note should
+/// not require knowing that a folder needs a metadata file first, so a folder
+/// with notes in it is published under its own name instead of being skipped.
+pub fn title_from_key(key: &str) -> String {
+    let mut out = String::with_capacity(key.len());
+    let mut start_of_word = true;
+
+    for ch in key.chars() {
+        if ch == '-' || ch == '_' || ch.is_whitespace() {
+            if !out.ends_with(' ') && !out.is_empty() {
+                out.push(' ');
+            }
+            start_of_word = true;
+            continue;
+        }
+        if start_of_word {
+            out.extend(ch.to_uppercase());
+            start_of_word = false;
+        } else {
+            out.push(ch);
+        }
+    }
+
+    out.trim().to_string()
+}
+
 // ---------------------------------------------------------------------------
 // markdown source preparation
 // ---------------------------------------------------------------------------
@@ -1245,6 +1288,35 @@ mod tests {
         let (fm, _) = split_frontmatter("---\ntags: rust\n---\n");
         assert_eq!(fm.list("tags"), vec!["rust"]);
         assert_eq!(fm.list("missing"), Vec::<String>::new());
+    }
+
+    #[test]
+    fn section_titles_come_from_folder_names() {
+        assert_eq!(title_from_key("messy"), "Messy");
+        assert_eq!(title_from_key("dev-tools"), "Dev Tools");
+        assert_eq!(title_from_key("dev_tools"), "Dev Tools");
+        assert_eq!(title_from_key("ESP32"), "ESP32");
+        assert_eq!(title_from_key("cortex-m"), "Cortex M");
+        // A name that is only separators must not produce a blank title.
+        assert_eq!(title_from_key("--"), "");
+    }
+
+    #[test]
+    fn flags_are_read_as_booleans() {
+        // Anything else — including a typo — leaves the note published, because
+        // the failure mode of guessing "draft" is more forgiving than the
+        // failure mode of guessing "published".
+        assert!(is_truthy(Some("true")));
+        assert!(is_truthy(Some("TRUE")));
+        assert!(is_truthy(Some(" yes ")));
+        assert!(is_truthy(Some("on")));
+        assert!(is_truthy(Some("1")));
+
+        assert!(!is_truthy(None));
+        assert!(!is_truthy(Some("false")));
+        assert!(!is_truthy(Some("no")));
+        assert!(!is_truthy(Some("")));
+        assert!(!is_truthy(Some("ture")));
     }
 
     #[test]

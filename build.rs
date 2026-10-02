@@ -22,9 +22,9 @@ use comrak::{Options, markdown_to_html_with_plugins};
 
 use pipeline::{
     Frontmatter, ImageInfo, TocEntry, add_heading_anchors, age_in_days, count_words,
-    image_dimensions, images_without_alt, is_date, join_multiline_tags, json_string, minify_css,
-    rewrite_images, short_hash, split_frontmatter, strip_bom, strip_html, wrap_code_blocks,
-    wrap_tables, xml_escape,
+    image_dimensions, images_without_alt, is_date, is_truthy, join_multiline_tags, json_string,
+    minify_css, rewrite_images, short_hash, split_frontmatter, strip_bom, strip_html,
+    title_from_key, wrap_code_blocks, wrap_tables, xml_escape,
 };
 
 /// Where the site is published, unless a deploy overrides it.
@@ -233,20 +233,22 @@ fn load_content(
         let index_path = dir.join("_index.md");
         let index_src = std::fs::read_to_string(&index_path).unwrap_or_default();
         let (fm, index_body) = split_frontmatter(&index_src);
+        // Fallback metadata for the shelves that predate `_index.md`. A folder
+        // with neither is no longer skipped: see `short` below.
         let fallback = section_meta(&key);
-
-        if !index_path.exists() && fallback.is_none() {
-            println!(
-                "cargo::warning=content/{key}/ has no _index.md and no entry in section_meta, so its notes are not published"
-            );
-            continue;
-        }
 
         let short = fm
             .get("short")
             .map(str::to_string)
             .or_else(|| fallback.map(|f| f.1.to_string()))
-            .unwrap_or_else(|| key.clone());
+            .unwrap_or_else(|| {
+                // No `_index.md` and no entry in `section_meta`, so the folder
+                // names itself. A folder of notes that published nothing at all
+                // was the most confusing thing this pipeline did: writing a note
+                // should be "put the file in content/", not "put the file in
+                // content/ and also know about a metadata file".
+                title_from_key(&key)
+            });
         let title = fm
             .get("title")
             .map(str::to_string)
@@ -256,15 +258,14 @@ fn load_content(
             .map(str::to_string)
             .or_else(|| fallback.map(|f| f.2.to_string()))
             .unwrap_or_default();
-        let order = match fm.number("order").or_else(|| fallback.map(|f| f.0)) {
-            Some(order) => order,
-            None => {
-                println!(
-                    "cargo::warning=content/{key}/_index.md has no `order`, so the shelf sorts last"
-                );
-                i64::MAX
-            }
-        };
+        // A section that exists only because a folder has notes in it sorts
+        // after every declared one, alphabetically among its peers. That
+        // includes a `_index.md` that forgot its `order`, which used to warn and
+        // now just sorts last like everything else undeclared.
+        let order = fm
+            .number("order")
+            .or_else(|| fallback.map(|f| f.0))
+            .unwrap_or(i64::MAX);
 
         // The intro is real authored copy 閳?the shelves lost it entirely when
         // the body was dropped during the port, and two of them still carry
@@ -302,6 +303,20 @@ fn load_content(
         for file in files {
             let raw = std::fs::read_to_string(&file).expect("read note");
             let (fm, body) = split_frontmatter(&raw);
+
+            // `draft: true` keeps a half-written note in `content/` without
+            // publishing it: it is left out of the note list entirely, so it has
+            // no page, no place in the feed or sitemap, and no entry in the
+            // search index.
+            //
+            // Skipped silently on purpose. A draft is deliberate, and the only
+            // way a build script can say anything is `cargo::warning`, which
+            // `.github/workflows/rust.yml` treats as a failure — so a warning
+            // here would fail CI for the whole time a draft was open.
+            if is_truthy(fm.get("draft")) {
+                continue;
+            }
+
             let body = join_multiline_tags(&body);
             let stem = file
                 .file_stem()
