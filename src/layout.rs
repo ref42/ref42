@@ -403,38 +403,6 @@ async fn footer() -> Result<impl View> {
                             " minutes of reading."
                         </p>
                     </div>
-                    <div class="footer-col">
-                        <h2>"Sections"</h2>
-                        <ul>
-                            for section in SECTIONS {
-                                <li><a href=(format!("/{}/", section.key))>(section.title)</a></li>
-                            }
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h2>"Resources"</h2>
-                        <ul>
-                            <li><a href=(GITHUB) target="_blank" rel="noopener noreferrer">"GitHub"</a></li>
-                            <li><a href=(site::BILIBILI) target="_blank" rel="noopener noreferrer">"Bilibili tutorials"</a></li>
-                            <li><a href="https://github.com/ref42/npnp" target="_blank" rel="noopener noreferrer">"npnp · EDA export CLI"</a></li>
-                            <li><a href="https://github.com/ref42/seex" target="_blank" rel="noopener noreferrer">"SeEx · desktop tool"</a></li>
-                            <li><a href="https://github.com/ref42/armup" target="_blank" rel="noopener noreferrer">"ARMUP · toolchain installer"</a></li>
-                            <li><a href="/feed.xml">"RSS feed"</a></li>
-                            // Revealed by `app.js`: it needs the search index to
-                            // pick a note, so with scripting off it stays hidden
-                            // rather than being a control that does nothing.
-                            <li>
-                                <button
-                                    type="button"
-                                    class="footer-random"
-                                    data-random-note=""
-                                    hidden=""
-                                >
-                                    "Random note"
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
                 <div class="site-footer__base">
                     <span>"Copyright " (site::SITE_TITLE) " · my daily notes"</span>

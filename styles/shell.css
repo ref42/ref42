@@ -322,57 +322,16 @@
   padding-block: var(--s-xl);
 }
 
-@media (min-width: 52rem) {
-  .site-footer__inner {
-    grid-template-columns: 1.6fr 1fr 1fr;
-  }
-}
+/* This was `1.6fr 1fr 1fr` for a brand column beside two link columns. Those
+   duplicated the header's navigation and its two icon links, so they are gone;
+   with a single child a three-track grid would squeeze the brand into the
+   narrowest-looking third and leave two empty tracks beside it. */
 
 .site-footer__brand p {
   max-width: 34ch;
   margin-top: 0.75rem;
   font-size: var(--t-sm);
   color: var(--muted);
-}
-
-.footer-col h2 {
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
-.footer-col ul {
-  margin-top: 0.9rem;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.footer-col a {
-  font-size: var(--t-sm);
-  color: var(--muted);
-  transition: color var(--dur) var(--ease);
-}
-
-.footer-col a:hover {
-  color: var(--ink);
-}
-
-/* A button rather than a link, because picking a random note needs the search
-   index. `app.js` reveals it, so with scripting off it stays hidden instead of
-   being a control that does nothing — but it has to look like its neighbours. */
-.footer-random {
-  padding: 0;
-  font-size: var(--t-sm);
-  color: var(--muted);
-  text-align: start;
-  transition: color var(--dur) var(--ease);
-}
-
-.footer-random:hover {
-  color: var(--ink);
 }
 
 .site-footer__base {
