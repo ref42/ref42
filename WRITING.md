@@ -7,7 +7,40 @@ Put a file at `content/<anything>/<name>.md` and it is published at
 `/<anything>/<name>/`. A folder becomes a section on its own; the filename
 becomes the URL.
 
-## A note, start to finish
+## Start a note with the command
+
+```powershell
+cargo new-note "Flash an ESP32-C6 over USB" -s esp32
+```
+
+That writes `content/esp32/flash_an_esp32_c6_over_usb.md` — the title becomes the
+filename and therefore the URL — with today's date and a `weight` that puts it
+after the last note in that section. It prints the path it wrote, the URL it will
+be published at, and the one field worth filling in before you commit.
+
+| | |
+|---|---|
+| `-s, --section <key>` | which folder to write into (required) |
+| `-w, --weight <n>` | position in the section, instead of last |
+| `-d, --date <date>` | `YYYY-MM-DD`, instead of today |
+| `--slug <name>` | the filename, if the title makes a poor one |
+| `-n, --dry-run` | print the note instead of writing it |
+| `-f, --force` | overwrite an existing note, or create a strange new section |
+
+Two things it refuses to do quietly. A section name that is one or two edits from
+an existing one — `--section toochain` — stops and asks whether you meant
+`toolchain`, because the alternative is publishing a stray shelf. And a title it
+cannot turn into a filename (`"!!!"`) asks for `--slug` rather than writing a file
+called `.md`.
+
+A section that does not exist yet is created, because a folder of notes is a
+section (see [Sections](#sections)).
+
+The alias is in `.cargo/config.toml`; without it the same command is
+`cargo run --quiet -- new "…" -s esp32`, which is also what the deployed binary
+offers as `ref42 new`.
+
+## A note by hand
 
 ```markdown
 ---
@@ -136,7 +169,7 @@ description, or to write an intro.
 ## What runs before it goes live
 
 Every push is checked by `.github/workflows/rust.yml`: `cargo fmt`, `clippy`
-with warnings denied, the 47 unit tests, and a content lint that fails on any
+with warnings denied, the unit tests, and a content lint that fails on any
 build warning — an `alt` that is missing, or a `date` that is not
 `YYYY-MM-DD`. The deploy is a separate workflow, so a failed check reports a
 problem without taking the site down.
@@ -149,5 +182,6 @@ problem without taking the site down.
 | `static/` | images, fonts, favicons — copied to the site root as-is |
 | `styles/` | the CSS sources, compiled and minified by the build |
 | `scripts/app.js` | search, keyboard shortcuts, the 404's "did you mean" |
+| `src/new_note.rs` | `ref42 new`, the command that writes a note |
 | `src/` | the Rust that renders the pages |
 | `build.rs` | turns `content/` into notes: frontmatter, ordering, feed, sitemap, search index |

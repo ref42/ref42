@@ -1,0 +1,8 @@
+# Cargo aliases for this project.
+#
+# `cargo new-note "Title" -s esp32` rather than
+# `cargo run --quiet -- new "Title" -s esp32`. An alias rather than a wrapper
+# script because cargo passes any extra arguments straight through, and because
+# `cargo new` itself cannot be shadowed — it is a built-in.
+[alias]
+new-note = "run --quiet -- new"

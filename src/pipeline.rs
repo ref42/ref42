@@ -236,6 +236,7 @@ pub fn is_date(value: &str) -> bool {
 }
 
 /// True for the values a frontmatter flag is written as: `true`, `yes`, `on`, `1`.
+///
 /// Frontmatter here is a map of strings rather than parsed YAML, so there is no
 /// boolean type to read. This is what decides that `draft: true` is a draft and
 /// `draft: no` — or a typo like `draft: ture` — is not, which matters because
@@ -276,6 +277,81 @@ pub fn title_from_key(key: &str) -> String {
     }
 
     out.trim().to_string()
+}
+
+// ---------------------------------------------------------------------------
+// authoring: what `ref42 new` writes
+
+/// A filename from a title: `Flash an ESP32-C6!` -> `flash_an_esp32_c6`.
+///
+/// Deliberately not `slugify`, which is the heading-anchor rule a few hundred
+/// lines down. That one keeps CJK characters, because an anchor a reader can
+/// read beats a transliterated one, and separates with hyphens. A filename is
+/// different: it becomes a path on someone's disk and a URL, so this is ASCII
+/// only, and it uses underscores because the notes with long titles already do
+/// (`rust_dev_base_env`, `esp32c3_dht11`). It can come back empty, which is the
+/// command's cue to ask for `--slug` rather than write a file called `.md`.
+pub fn filename_from_title(title: &str) -> String {
+    let mut out = String::with_capacity(title.len());
+
+    for ch in title.chars() {
+        if ch.is_ascii_alphanumeric() {
+            out.push(ch.to_ascii_lowercase());
+        } else if !out.is_empty() && !out.ends_with('_') {
+            out.push('_');
+        }
+    }
+
+    out.trim_end_matches('_').to_string()
+}
+
+/// The weight that puts a new note after everything already in its section.
+///
+/// Existing notes use 10, 20, 30, so this keeps the gaps: the next note gets
+/// max + 10, and inserting one between two others is a matter of typing 15
+/// rather than renumbering the section.
+pub fn next_weight(existing: &[i64]) -> i64 {
+    existing.iter().copied().max().unwrap_or(0) + 10
+}
+
+/// A frontmatter value, quoted so the parser hands back exactly what went in.
+///
+/// Single quotes unless the value contains one, because that is what the notes
+/// already look like and this parser only strips a matching pair. Falling back
+/// to double quotes matters: `Don't panic` in single quotes round-trips here but
+/// would not survive a real YAML parser, and swapping to double quotes keeps the
+/// file valid for both.
+pub fn quote_value(value: &str) -> String {
+    if value.contains('\'') && !value.contains('"') {
+        format!("\"{value}\"")
+    } else {
+        format!("'{value}'")
+    }
+}
+
+/// The whole file a new note starts as.
+///
+/// Here rather than in the command so the shape of a note is in one place and
+/// can be asserted: the fields are the ones that change what the site does
+/// (`weight` orders it, `date` puts it in the feed, `description` is what the
+/// catalogue and search show), and the body is short enough to be obviously
+/// disposable.
+pub fn note_template(title: &str, weight: i64, date: &str) -> String {
+    format!(
+        "---\n\
+         title: {title}\n\
+         description: ''\n\
+         weight: {weight}\n\
+         date: \"{date}\"\n\
+         ---\n\
+         \n\
+         One or two sentences on what this note covers, and why.\n\
+         \n\
+         ## First heading\n\
+         \n\
+         Text.\n",
+        title = quote_value(title),
+    )
 }
 
 // ---------------------------------------------------------------------------
@@ -1164,6 +1240,49 @@ pub fn age_in_days(date: &str, today_days: i64) -> Option<i64> {
     Some(today_days - days_from_civil(year, month, day))
 }
 
+/// The inverse of `days_from_civil`: days since the epoch back to a calendar date.
+///
+/// Howard Hinnant's `civil_from_days`, the same algorithm in the other
+/// direction. It exists so a note can be dated today without pulling a date
+/// crate into a site that needs exactly one date format.
+pub fn civil_from_days(days: i64) -> (i64, u32, u32) {
+    let shifted = days + 719_468;
+    let era = if shifted >= 0 {
+        shifted
+    } else {
+        shifted - 146_096
+    } / 146_097;
+    let day_of_era = (shifted - era * 146_097) as u64; // [0, 146096]
+    let year_of_era =
+        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365; // [0, 399]
+    let year = year_of_era as i64 + era * 400;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100); // [0, 365]
+    let shifted_month = (5 * day_of_year + 2) / 153; // [0, 11], March-based
+    let day = (day_of_year - (153 * shifted_month + 2) / 5 + 1) as u32; // [1, 31]
+    let month = (if shifted_month < 10 {
+        shifted_month + 3
+    } else {
+        shifted_month - 9
+    }) as u32; // [1, 12]
+
+    (if month <= 2 { year + 1 } else { year }, month, day)
+}
+
+/// Today, as `YYYY-MM-DD`, from the system clock.
+///
+/// The clock only has to be right to the day, so this reads seconds since the
+/// epoch rather than dragging in timezone handling — a note written at 00:30
+/// will be dated by UTC, which is the same trade `build.rs` already makes when
+/// it computes how stale a note is.
+pub fn today_date() -> String {
+    let days = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|elapsed| (elapsed.as_secs() / 86_400) as i64)
+        .unwrap_or(0);
+    let (year, month, day) = civil_from_days(days);
+    format!("{year:04}-{month:02}-{day:02}")
+}
+
 /// "today", "yesterday", "3 days ago", "2 months ago", "a year ago" — how long
 /// since a note was last verified, which is the one fact a toolchain guide has
 /// to be honest about, and the reason the badge exists.
@@ -1299,6 +1418,97 @@ mod tests {
         assert_eq!(title_from_key("cortex-m"), "Cortex M");
         // A name that is only separators must not produce a blank title.
         assert_eq!(title_from_key("--"), "");
+    }
+
+    #[test]
+    fn titles_become_filenames() {
+        assert_eq!(
+            filename_from_title("Flash an ESP32-C6!"),
+            "flash_an_esp32_c6"
+        );
+        assert_eq!(filename_from_title("Cortex-M + Rust"), "cortex_m_rust");
+        assert_eq!(
+            filename_from_title("npnp: EDA export CLI"),
+            "npnp_eda_export_cli"
+        );
+        assert_eq!(filename_from_title("  spaced  out  "), "spaced_out");
+        assert_eq!(filename_from_title("already_slugged"), "already_slugged");
+        // Nothing usable is left, and the command has to notice rather than
+        // write a file called `.md`.
+        assert_eq!(filename_from_title("!!!"), "");
+        assert_eq!(filename_from_title(""), "");
+        // No doubled or trailing separators.
+        assert!(!filename_from_title("a -- b").contains("__"));
+        assert!(!filename_from_title("trailing!").ends_with('_'));
+        // Unlike a heading anchor, a filename stays ASCII: the URL is shared and
+        // the file has to survive every filesystem it lands on.
+        assert_eq!(filename_from_title("嵌入式 Rust"), "rust");
+    }
+
+    #[test]
+    fn a_new_note_sorts_after_the_others() {
+        assert_eq!(next_weight(&[]), 10);
+        assert_eq!(next_weight(&[10]), 20);
+        assert_eq!(next_weight(&[10, 40, 30]), 50);
+        // Unsorted input is the normal case: notes are collected in file order.
+        assert_eq!(next_weight(&[30, 10, 20]), 40);
+    }
+
+    #[test]
+    fn values_are_quoted_for_the_parser_that_reads_them() {
+        assert_eq!(quote_value("Plain title"), "'Plain title'");
+        // An apostrophe would end a single-quoted value.
+        assert_eq!(quote_value("Don't panic"), "\"Don't panic\"");
+        // A double quote inside is fine either way, so the usual style wins.
+        assert_eq!(quote_value("The \"best\" way"), "'The \"best\" way'");
+        // Both: single quotes, which this parser strips correctly, and which is
+        // the least bad option a YAML parser would also accept.
+        assert_eq!(quote_value("it's a \"test\""), "'it's a \"test\"'");
+    }
+
+    #[test]
+    fn a_new_note_is_a_valid_note() {
+        let note = note_template("Don't panic", 30, "2026-10-02");
+
+        // The frontmatter has to parse back to what went in.
+        let (fields, body) = split_frontmatter(&note);
+        assert_eq!(fields.get("title"), Some("Don't panic"));
+        assert_eq!(fields.get("weight"), Some("30"));
+        assert_eq!(fields.get("date"), Some("2026-10-02"));
+        assert_eq!(fields.get("description"), Some(""));
+        assert!(is_date(fields.get("date").unwrap_or_default()));
+        // `date` present is what puts a note in the feed; `draft` absent is what
+        // keeps it published.
+        assert!(!is_truthy(fields.get("draft")));
+        // And it is not an empty body: a note with a heading is a note.
+        assert!(body.contains("## First heading"));
+    }
+
+    #[test]
+    fn dates_convert_both_ways() {
+        // The epoch, which is what `today_date` counts from.
+        assert_eq!(civil_from_days(0), (1970, 1, 1));
+        assert_eq!(days_from_civil(1970, 1, 1), 0);
+
+        for date in [
+            "2026-10-02",
+            "2026-01-01",
+            "2026-12-31",
+            "2024-02-29", // a leap day
+            "2000-03-01",
+            "1999-12-31",
+            "2100-06-15",
+        ] {
+            let (year, month, day) = parse_date(date).expect("test date parses");
+            assert_eq!(
+                civil_from_days(days_from_civil(year, month, day)),
+                (year, month, day),
+                "round trip failed for {date}"
+            );
+        }
+
+        // And what the command writes today is a date the build accepts.
+        assert!(is_date(&today_date()), "today_date: {}", today_date());
     }
 
     #[test]
